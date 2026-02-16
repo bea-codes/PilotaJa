@@ -26,6 +26,10 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Auth (placeholder - configurar depois)
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 app.UseCors("AllowReact");
