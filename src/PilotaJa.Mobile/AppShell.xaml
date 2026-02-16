@@ -14,21 +14,21 @@
         
         <ShellContent
             Title="Instrutores"
-            Route="InstrutoresPage"
-            ContentTemplate="{DataTemplate views:InstrutoresPage}" />
+            Route="InstructorsPage"
+            ContentTemplate="{DataTemplate views:InstructorsPage}" />
         
         <ShellContent
             Title="Agendamentos"
-            Route="AgendamentosPage"
-            ContentTemplate="{DataTemplate views:AgendamentosPage}" />
+            Route="AppointmentsPage"
+            ContentTemplate="{DataTemplate views:AppointmentsPage}" />
         
         <ShellContent
             Title="Perfil"
-            Route="PerfilPage"
-            ContentTemplate="{DataTemplate views:PerfilPage}" />
+            Route="ProfilePage"
+            ContentTemplate="{DataTemplate views:ProfilePage}" />
     </TabBar>
 
-    <!-- Rotas para navegação -->
+    <!-- Routes for navigation -->
     <Shell.FlyoutBehavior>
         <OnPlatform x:TypeArguments="FlyoutBehavior">
             <On Platform="iOS, Android" Value="Disabled" />

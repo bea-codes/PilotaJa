@@ -25,17 +25,17 @@ public static class MauiProgram
 
         // ViewModels
         builder.Services.AddTransient<HomeViewModel>();
-        builder.Services.AddTransient<InstrutoresViewModel>();
-        builder.Services.AddTransient<InstrutorDetalheViewModel>();
-        builder.Services.AddTransient<AgendamentosViewModel>();
-        builder.Services.AddTransient<PerfilViewModel>();
+        builder.Services.AddTransient<InstructorsViewModel>();
+        builder.Services.AddTransient<InstructorDetailViewModel>();
+        builder.Services.AddTransient<AppointmentsViewModel>();
+        builder.Services.AddTransient<ProfileViewModel>();
 
         // Views
         builder.Services.AddTransient<HomePage>();
-        builder.Services.AddTransient<InstrutoresPage>();
-        builder.Services.AddTransient<InstrutorDetalhePage>();
-        builder.Services.AddTransient<AgendamentosPage>();
-        builder.Services.AddTransient<PerfilPage>();
+        builder.Services.AddTransient<InstructorsPage>();
+        builder.Services.AddTransient<InstructorDetailPage>();
+        builder.Services.AddTransient<AppointmentsPage>();
+        builder.Services.AddTransient<ProfilePage>();
 
         return builder.Build();
     }

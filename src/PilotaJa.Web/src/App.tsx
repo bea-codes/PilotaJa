@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Home from './pages/Home';
-import Instrutores from './pages/Instrutores';
-import InstrutorDetalhe from './pages/InstrutorDetalhe';
+import Instructors from './pages/Instructors';
+import InstructorDetail from './pages/InstructorDetail';
 
 const queryClient = new QueryClient();
 
@@ -12,8 +12,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/instrutores" element={<Instrutores />} />
-          <Route path="/instrutores/:id" element={<InstrutorDetalhe />} />
+          <Route path="/instructors" element={<Instructors />} />
+          <Route path="/instructors/:id" element={<InstructorDetail />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

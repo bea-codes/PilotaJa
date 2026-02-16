@@ -10,7 +10,7 @@ public class ApiService : IApiService
     private readonly IAuthService _authService;
     private readonly JsonSerializerOptions _jsonOptions;
 
-    // TODO: Mover para configuração
+    // TODO: Move to configuration
     private const string BaseUrl = "http://10.0.2.2:5000"; // Android emulator
     // private const string BaseUrl = "http://localhost:5000"; // iOS simulator
 
@@ -36,64 +36,64 @@ public class ApiService : IApiService
         }
     }
 
-    public async Task<ListarInstrutoresResponse> GetInstrutoresAsync(ListarInstrutoresRequest? request = null)
+    public async Task<ListInstructorsResponse> GetInstructorsAsync(ListInstructorsRequest? request = null)
     {
         var query = "";
         if (request != null)
         {
             var queryParams = new List<string>();
-            if (!string.IsNullOrEmpty(request.Cidade)) queryParams.Add($"cidade={request.Cidade}");
-            if (!string.IsNullOrEmpty(request.Estado)) queryParams.Add($"estado={request.Estado}");
-            if (request.PrecoMaximo.HasValue) queryParams.Add($"precoMaximo={request.PrecoMaximo}");
-            if (request.AvaliacaoMinima.HasValue) queryParams.Add($"avaliacaoMinima={request.AvaliacaoMinima}");
-            queryParams.Add($"pagina={request.Pagina}");
-            queryParams.Add($"porPagina={request.PorPagina}");
+            if (!string.IsNullOrEmpty(request.City)) queryParams.Add($"city={request.City}");
+            if (!string.IsNullOrEmpty(request.State)) queryParams.Add($"state={request.State}");
+            if (request.MaxPrice.HasValue) queryParams.Add($"maxPrice={request.MaxPrice}");
+            if (request.MinRating.HasValue) queryParams.Add($"minRating={request.MinRating}");
+            queryParams.Add($"page={request.Page}");
+            queryParams.Add($"pageSize={request.PageSize}");
             query = "?" + string.Join("&", queryParams);
         }
 
-        var response = await _httpClient.GetAsync($"/api/instrutores{query}");
+        var response = await _httpClient.GetAsync($"/api/instructors{query}");
         response.EnsureSuccessStatusCode();
         
-        return await response.Content.ReadFromJsonAsync<ListarInstrutoresResponse>(_jsonOptions) 
-            ?? new ListarInstrutoresResponse();
+        return await response.Content.ReadFromJsonAsync<ListInstructorsResponse>(_jsonOptions) 
+            ?? new ListInstructorsResponse();
     }
 
-    public async Task<InstrutorDetalheDto> GetInstrutorAsync(Guid id)
+    public async Task<InstructorDetailDto> GetInstructorAsync(Guid id)
     {
-        var response = await _httpClient.GetAsync($"/api/instrutores/{id}");
+        var response = await _httpClient.GetAsync($"/api/instructors/{id}");
         response.EnsureSuccessStatusCode();
         
-        return await response.Content.ReadFromJsonAsync<InstrutorDetalheDto>(_jsonOptions) 
-            ?? throw new Exception("Instrutor não encontrado");
+        return await response.Content.ReadFromJsonAsync<InstructorDetailDto>(_jsonOptions) 
+            ?? throw new Exception("Instructor not found");
     }
 
-    public async Task<List<AgendamentoDto>> GetAgendamentosAsync()
+    public async Task<List<AppointmentDto>> GetAppointmentsAsync()
     {
         AddAuthHeader();
-        var response = await _httpClient.GetAsync("/api/agendamentos");
+        var response = await _httpClient.GetAsync("/api/appointments");
         response.EnsureSuccessStatusCode();
         
-        return await response.Content.ReadFromJsonAsync<List<AgendamentoDto>>(_jsonOptions) 
+        return await response.Content.ReadFromJsonAsync<List<AppointmentDto>>(_jsonOptions) 
             ?? [];
     }
 
-    public async Task<CriarAgendamentoResponse> CriarAgendamentoAsync(CriarAgendamentoRequest request)
+    public async Task<CreateAppointmentResponse> CreateAppointmentAsync(CreateAppointmentRequest request)
     {
         AddAuthHeader();
-        var response = await _httpClient.PostAsJsonAsync("/api/agendamentos", request);
+        var response = await _httpClient.PostAsJsonAsync("/api/appointments", request);
         response.EnsureSuccessStatusCode();
         
-        return await response.Content.ReadFromJsonAsync<CriarAgendamentoResponse>(_jsonOptions) 
-            ?? throw new Exception("Erro ao criar agendamento");
+        return await response.Content.ReadFromJsonAsync<CreateAppointmentResponse>(_jsonOptions) 
+            ?? throw new Exception("Error creating appointment");
     }
 
-    public async Task<AlunoDto> GetPerfilAsync()
+    public async Task<StudentDto> GetProfileAsync()
     {
         AddAuthHeader();
-        var response = await _httpClient.GetAsync("/api/alunos/me");
+        var response = await _httpClient.GetAsync("/api/students/me");
         response.EnsureSuccessStatusCode();
         
-        return await response.Content.ReadFromJsonAsync<AlunoDto>(_jsonOptions) 
-            ?? throw new Exception("Perfil não encontrado");
+        return await response.Content.ReadFromJsonAsync<StudentDto>(_jsonOptions) 
+            ?? throw new Exception("Profile not found");
     }
 }

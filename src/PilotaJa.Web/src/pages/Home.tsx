@@ -15,7 +15,7 @@ export default function Home() {
             Conectamos você a instrutores autônomos qualificados na sua região.
             Agende aulas no horário que preferir.
           </p>
-          <Link to="/instrutores" className="btn-primary">
+          <Link to="/instructors" className="btn-primary">
             Encontrar Instrutor
           </Link>
         </section>

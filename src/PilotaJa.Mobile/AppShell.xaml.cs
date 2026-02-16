@@ -8,10 +8,10 @@ public partial class AppShell : Shell
     {
         InitializeComponent();
         
-        // Registrar rotas para navegação
-        Routing.RegisterRoute(nameof(InstrutoresPage), typeof(InstrutoresPage));
-        Routing.RegisterRoute(nameof(InstrutorDetalhePage), typeof(InstrutorDetalhePage));
-        Routing.RegisterRoute(nameof(AgendamentosPage), typeof(AgendamentosPage));
-        Routing.RegisterRoute(nameof(PerfilPage), typeof(PerfilPage));
+        // Register routes for navigation
+        Routing.RegisterRoute(nameof(InstructorsPage), typeof(InstructorsPage));
+        Routing.RegisterRoute(nameof(InstructorDetailPage), typeof(InstructorDetailPage));
+        Routing.RegisterRoute(nameof(AppointmentsPage), typeof(AppointmentsPage));
+        Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
     }
 }

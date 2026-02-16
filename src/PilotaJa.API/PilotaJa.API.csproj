@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -9,18 +9,10 @@
   <ItemGroup>
     <PackageReference Include="FastEndpoints" Version="5.33.0" />
     <PackageReference Include="FastEndpoints.Swagger" Version="5.33.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PilotaJa.Modules.Instrutores\PilotaJa.Modules.Instrutores.csproj" />
-    <ProjectReference Include="..\PilotaJa.Modules.Alunos\PilotaJa.Modules.Alunos.csproj" />
-    <ProjectReference Include="..\PilotaJa.Modules.Agendamentos\PilotaJa.Modules.Agendamentos.csproj" />
+    <ProjectReference Include="..\PilotaJa.Shared\PilotaJa.Shared.csproj" />
   </ItemGroup>
 
 </Project>

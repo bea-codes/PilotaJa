@@ -4,11 +4,11 @@ namespace PilotaJa.Mobile.Services;
 
 public interface IApiService
 {
-    Task<ListarInstrutoresResponse> GetInstrutoresAsync(ListarInstrutoresRequest? request = null);
-    Task<InstrutorDetalheDto> GetInstrutorAsync(Guid id);
-    Task<List<AgendamentoDto>> GetAgendamentosAsync();
-    Task<CriarAgendamentoResponse> CriarAgendamentoAsync(CriarAgendamentoRequest request);
-    Task<AlunoDto> GetPerfilAsync();
+    Task<ListInstructorsResponse> GetInstructorsAsync(ListInstructorsRequest? request = null);
+    Task<InstructorDetailDto> GetInstructorAsync(Guid id);
+    Task<List<AppointmentDto>> GetAppointmentsAsync();
+    Task<CreateAppointmentResponse> CreateAppointmentAsync(CreateAppointmentRequest request);
+    Task<StudentDto> GetProfileAsync();
 }
 
 public interface IAuthService
