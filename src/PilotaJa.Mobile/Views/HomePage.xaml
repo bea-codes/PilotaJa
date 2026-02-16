@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PilotaJa.Mobile.ViewModels"
+             x:Class="PilotaJa.Mobile.Views.HomePage"
+             x:DataType="vm:HomeViewModel"
+             BackgroundColor="{StaticResource Background}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            
+            <!-- Header -->
+            <VerticalStackLayout Spacing="8" Margin="0,40,0,20">
+                <Label Text="🚗 PilotaJá" 
+                       FontSize="32" 
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       TextColor="{StaticResource Primary}"/>
+                <Label Text="Encontre o instrutor ideal para você"
+                       FontSize="16"
+                       HorizontalOptions="Center"
+                       TextColor="{StaticResource TextSecondary}"/>
+            </VerticalStackLayout>
+
+            <!-- Hero Card -->
+            <Frame BackgroundColor="{StaticResource Surface}" 
+                   CornerRadius="16" 
+                   Padding="24"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Aprenda a dirigir com os melhores"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                    <Label Text="Conectamos você a instrutores autônomos qualificados na sua região. Agende aulas no horário que preferir."
+                           FontSize="14"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalTextAlignment="Center"/>
+                    <Button Text="Encontrar Instrutor"
+                            Style="{StaticResource PrimaryButton}"
+                            Command="{Binding BuscarInstrutoresCommand}"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Features -->
+            <Label Text="Por que usar o PilotaJá?"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,20,0,10"/>
+
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                <Frame Grid.Column="0" BackgroundColor="{StaticResource Surface}" CornerRadius="12" Padding="16">
+                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                        <Label Text="📍" FontSize="28" HorizontalOptions="Center"/>
+                        <Label Text="Perto" FontAttributes="Bold" HorizontalOptions="Center"/>
+                        <Label Text="Na sua região" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+                
+                <Frame Grid.Column="1" BackgroundColor="{StaticResource Surface}" CornerRadius="12" Padding="16">
+                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                        <Label Text="⭐" FontSize="28" HorizontalOptions="Center"/>
+                        <Label Text="Avaliados" FontAttributes="Bold" HorizontalOptions="Center"/>
+                        <Label Text="Notas reais" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+                
+                <Frame Grid.Column="2" BackgroundColor="{StaticResource Surface}" CornerRadius="12" Padding="16">
+                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                        <Label Text="📅" FontSize="28" HorizontalOptions="Center"/>
+                        <Label Text="Flexível" FontAttributes="Bold" HorizontalOptions="Center"/>
+                        <Label Text="Seu horário" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

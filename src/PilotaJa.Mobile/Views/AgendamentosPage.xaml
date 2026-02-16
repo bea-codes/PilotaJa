@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:PilotaJa.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:PilotaJa.Shared.DTOs;assembly=PilotaJa.Shared"
+             x:Class="PilotaJa.Mobile.Views.AgendamentosPage"
+             x:DataType="vm:AgendamentosViewModel"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource Background}">
+
+    <RefreshView IsRefreshing="{Binding IsRefreshing}"
+                 Command="{Binding LoadAgendamentosCommand}">
+        
+        <CollectionView ItemsSource="{Binding Agendamentos}">
+            
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
+                    <Label Text="📅" FontSize="48" HorizontalOptions="Center"/>
+                    <Label Text="Nenhum agendamento" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="Encontre um instrutor e agende sua primeira aula!"
+                           FontSize="14"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalTextAlignment="Center"
+                           Margin="0,8,0,0"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="dto:AgendamentoDto">
+                    <Frame Margin="16,8" Padding="16" BackgroundColor="{StaticResource Surface}" CornerRadius="12">
+                        <VerticalStackLayout Spacing="8">
+                            <HorizontalStackLayout Spacing="12">
+                                <Frame WidthRequest="50" HeightRequest="50" CornerRadius="25" BackgroundColor="#E5E7EB" Padding="0">
+                                    <Label Text="👤" FontSize="20" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                </Frame>
+                                <VerticalStackLayout>
+                                    <Label Text="{Binding InstrutorNome}" FontAttributes="Bold" FontSize="16"/>
+                                    <Label Text="{Binding DataHora, StringFormat='{0:dd/MM/yyyy HH:mm}'}" TextColor="{StaticResource TextSecondary}"/>
+                                </VerticalStackLayout>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="16">
+                                <Label TextColor="{StaticResource Primary}">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="R$ "/>
+                                            <Span Text="{Binding Valor, StringFormat='{0:F2}'}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Text="{Binding Status}" TextColor="{StaticResource TextSecondary}"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </RefreshView>
+
+</ContentPage>

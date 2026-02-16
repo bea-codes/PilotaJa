@@ -13,7 +13,8 @@ PilotaJá é um aplicativo que permite:
 
 | Camada | Tecnologia |
 |--------|------------|
-| **Frontend** | React + Vite + TypeScript |
+| **Frontend Web** | React + Vite + TypeScript |
+| **Mobile** | .NET MAUI (iOS + Android) |
 | **Backend** | .NET 8 + FastEndpoints |
 | **Banco de Dados** | SQL Server |
 | **Documentação API** | Swagger/OpenAPI |
@@ -32,13 +33,22 @@ PilotaJa/
 │   │   │   └── Aulas/
 │   │   └── Infrastructure/     # DbContext, Configs
 │   │
-│   └── PilotaJa.Web/           # Frontend React
-│       ├── src/
-│       │   ├── components/
-│       │   ├── pages/
-│       │   ├── services/
-│       │   └── hooks/
-│       └── package.json
+│   ├── PilotaJa.Web/           # Frontend React (Web)
+│   │   ├── src/
+│   │   │   ├── components/
+│   │   │   ├── pages/
+│   │   │   ├── services/
+│   │   │   └── hooks/
+│   │   └── package.json
+│   │
+│   ├── PilotaJa.Mobile/        # App Mobile (.NET MAUI)
+│   │   ├── Views/              # Páginas XAML
+│   │   ├── ViewModels/         # MVVM ViewModels
+│   │   ├── Services/           # API, Auth
+│   │   └── Resources/          # Assets, Fonts
+│   │
+│   └── PilotaJa.Shared/        # DTOs compartilhados
+│       └── DTOs/               # Usados por API, Web e Mobile
 │
 └── docs/                        # Documentação adicional
 ```
@@ -70,6 +80,20 @@ npm run dev
 ```
 
 App disponível em: `http://localhost:5173`
+
+### Mobile (.NET MAUI)
+
+```bash
+cd src/PilotaJa.Mobile
+
+# Android
+dotnet build -f net8.0-android
+dotnet run -f net8.0-android
+
+# iOS (requer Mac)
+dotnet build -f net8.0-ios
+dotnet run -f net8.0-ios
+```
 
 ## 📡 Endpoints da API
 
