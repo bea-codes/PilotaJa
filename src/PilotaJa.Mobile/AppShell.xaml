@@ -9,22 +9,22 @@
     <TabBar>
         <ShellContent
             Title="Início"
-            Icon="home.png"
+            Route="HomePage"
             ContentTemplate="{DataTemplate views:HomePage}" />
         
         <ShellContent
             Title="Instrutores"
-            Icon="search.png"
+            Route="InstrutoresPage"
             ContentTemplate="{DataTemplate views:InstrutoresPage}" />
         
         <ShellContent
             Title="Agendamentos"
-            Icon="calendar.png"
+            Route="AgendamentosPage"
             ContentTemplate="{DataTemplate views:AgendamentosPage}" />
         
         <ShellContent
             Title="Perfil"
-            Icon="person.png"
+            Route="PerfilPage"
             ContentTemplate="{DataTemplate views:PerfilPage}" />
     </TabBar>
 

@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using PilotaJa.Mobile.Views;
 
 namespace PilotaJa.Mobile.ViewModels;
 
@@ -14,12 +13,14 @@ public partial class HomeViewModel : BaseViewModel
     [RelayCommand]
     private async Task BuscarInstrutoresAsync()
     {
-        await Shell.Current.GoToAsync(nameof(InstrutoresPage));
+        // Navega para a tab de Instrutores
+        await Shell.Current.GoToAsync("//InstrutoresPage");
     }
 
     [RelayCommand]
     private async Task VerAgendamentosAsync()
     {
-        await Shell.Current.GoToAsync(nameof(AgendamentosPage));
+        // Navega para a tab de Agendamentos
+        await Shell.Current.GoToAsync("//AgendamentosPage");
     }
 }
