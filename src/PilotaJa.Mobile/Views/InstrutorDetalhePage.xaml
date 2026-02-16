@@ -75,7 +75,7 @@
                     
                     <VerticalStackLayout Spacing="4">
                         <Label Text="Data" FontSize="14"/>
-                        <DatePicker Date="{Binding DataSelecionada}" MinimumDate="{x:Static sys:DateTime.Today}" xmlns:sys="clr-namespace:System;assembly=netstandard"/>
+                        <DatePicker Date="{Binding DataSelecionada}"/>
                     </VerticalStackLayout>
                     
                     <VerticalStackLayout Spacing="4">
