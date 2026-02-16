@@ -1,5 +1,6 @@
 using FastEndpoints;
 using PilotaJa.API.Domain;
+using PilotaJa.API.Infrastructure.Persistence;
 
 namespace PilotaJa.API.Features.Instructors;
 
@@ -36,6 +37,13 @@ public class InstructorSummaryDto
 
 public class ListInstructorsEndpoint : Endpoint<ListInstructorsRequest, ListInstructorsResponse>
 {
+    private readonly IRepository<Instructor> _repository;
+
+    public ListInstructorsEndpoint(IRepository<Instructor> repository)
+    {
+        _repository = repository;
+    }
+
     public override void Configure()
     {
         Get("/api/instructors");
@@ -49,41 +57,38 @@ public class ListInstructorsEndpoint : Endpoint<ListInstructorsRequest, ListInst
 
     public override async Task HandleAsync(ListInstructorsRequest req, CancellationToken ct)
     {
-        // TODO: Implement database query
-        // For now, return mock data
-        
-        var instructors = new List<InstructorSummaryDto>
-        {
-            new()
+        var instructors = await _repository.FindAsync(i => 
+            i.IsActive &&
+            (string.IsNullOrEmpty(req.City) || i.City.ToLower().Contains(req.City.ToLower())) &&
+            (string.IsNullOrEmpty(req.State) || i.State.ToLower() == req.State.ToLower()) &&
+            (!req.MaxPrice.HasValue || i.HourlyRate <= req.MaxPrice.Value) &&
+            (!req.MinRating.HasValue || i.Rating >= req.MinRating.Value)
+        );
+
+        var total = instructors.Count();
+        var paged = instructors
+            .Skip((req.Page - 1) * req.PageSize)
+            .Take(req.PageSize)
+            .Select(i => new InstructorSummaryDto
             {
-                Id = Guid.NewGuid(),
-                Name = "João Silva",
-                City = "São Paulo",
-                State = "SP",
-                HourlyRate = 80.00m,
-                Rating = 4.8,
-                TotalLessons = 150,
-                Bio = "10 years of experience, specialist with nervous students"
-            },
-            new()
-            {
-                Id = Guid.NewGuid(),
-                Name = "Maria Santos",
-                City = "São Paulo",
-                State = "SP",
-                HourlyRate = 90.00m,
-                Rating = 4.9,
-                TotalLessons = 230,
-                Bio = "Certified instructor, adapted car available"
-            }
-        };
+                Id = i.Id,
+                Name = i.Name,
+                City = i.City,
+                State = i.State,
+                HourlyRate = i.HourlyRate,
+                Rating = i.Rating,
+                TotalLessons = i.TotalLessons,
+                PhotoUrl = i.PhotoUrl,
+                Bio = i.Bio
+            })
+            .ToList();
 
         await SendAsync(new ListInstructorsResponse
         {
-            Instructors = instructors,
-            Total = instructors.Count,
+            Instructors = paged,
+            Total = total,
             Page = req.Page,
-            TotalPages = 1
+            TotalPages = (int)Math.Ceiling(total / (double)req.PageSize)
         }, cancellation: ct);
     }
 }

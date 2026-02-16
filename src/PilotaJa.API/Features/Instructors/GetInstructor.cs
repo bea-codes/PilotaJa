@@ -1,5 +1,6 @@
 using FastEndpoints;
 using PilotaJa.API.Domain;
+using PilotaJa.API.Infrastructure.Persistence;
 
 namespace PilotaJa.API.Features.Instructors;
 
@@ -35,6 +36,13 @@ public class AvailabilityDto
 
 public class GetInstructorEndpoint : Endpoint<GetInstructorRequest, InstructorDetailDto>
 {
+    private readonly IRepository<Instructor> _repository;
+
+    public GetInstructorEndpoint(IRepository<Instructor> repository)
+    {
+        _repository = repository;
+    }
+
     public override void Configure()
     {
         Get("/api/instructors/{Id}");
@@ -48,33 +56,37 @@ public class GetInstructorEndpoint : Endpoint<GetInstructorRequest, InstructorDe
 
     public override async Task HandleAsync(GetInstructorRequest req, CancellationToken ct)
     {
-        // TODO: Query database
+        var instructor = await _repository.GetByIdAsync(req.Id);
         
-        var instructor = new InstructorDetailDto
+        if (instructor == null)
         {
-            Id = req.Id,
-            Name = "João Silva",
-            Email = "joao@email.com",
-            Phone = "(11) 99999-9999",
-            LicenseCategory = "AB",
-            HourlyRate = 80.00m,
-            Bio = "10 years of experience, specialist with nervous students",
-            Rating = 4.8,
-            TotalLessons = 150,
-            City = "São Paulo",
-            State = "SP",
-            ServiceRadiusKm = 15,
-            Availabilities =
-            [
-                new() { DayOfWeek = DayOfWeek.Monday, StartTime = "08:00", EndTime = "18:00" },
-                new() { DayOfWeek = DayOfWeek.Tuesday, StartTime = "08:00", EndTime = "18:00" },
-                new() { DayOfWeek = DayOfWeek.Wednesday, StartTime = "08:00", EndTime = "18:00" },
-                new() { DayOfWeek = DayOfWeek.Thursday, StartTime = "08:00", EndTime = "18:00" },
-                new() { DayOfWeek = DayOfWeek.Friday, StartTime = "08:00", EndTime = "18:00" },
-                new() { DayOfWeek = DayOfWeek.Saturday, StartTime = "08:00", EndTime = "12:00" },
-            ]
+            await SendNotFoundAsync(ct);
+            return;
+        }
+
+        var dto = new InstructorDetailDto
+        {
+            Id = instructor.Id,
+            Name = instructor.Name,
+            Email = instructor.Email,
+            Phone = instructor.Phone,
+            LicenseCategory = instructor.LicenseCategory,
+            HourlyRate = instructor.HourlyRate,
+            PhotoUrl = instructor.PhotoUrl,
+            Bio = instructor.Bio,
+            Rating = instructor.Rating,
+            TotalLessons = instructor.TotalLessons,
+            City = instructor.City,
+            State = instructor.State,
+            ServiceRadiusKm = instructor.ServiceRadiusKm,
+            Availabilities = instructor.Availabilities.Select(a => new AvailabilityDto
+            {
+                DayOfWeek = a.DayOfWeek,
+                StartTime = a.StartTime,
+                EndTime = a.EndTime
+            }).ToList()
         };
 
-        await SendAsync(instructor, cancellation: ct);
+        await SendAsync(dto, cancellation: ct);
     }
 }

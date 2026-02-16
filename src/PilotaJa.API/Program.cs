@@ -1,13 +1,8 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
-using PilotaJa.Modules.Instrutores;
-using PilotaJa.Modules.Alunos;
-using PilotaJa.Modules.Agendamentos;
+using PilotaJa.API.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? throw new InvalidOperationException("Connection string not found");
 
 // FastEndpoints
 builder.Services.AddFastEndpoints();
@@ -17,11 +12,14 @@ builder.Services.SwaggerDocument(o =>
     {
         s.Title = "PilotaJá API";
         s.Version = "v1";
-        s.Description = "API para gerenciamento de aulas de direção com instrutores autônomos";
+        s.Description = "API for driving lesson scheduling with independent instructors";
     };
 });
 
-// CORS para o React
+// MongoDB
+builder.Services.AddMongoDb(builder.Configuration);
+
+// CORS for React
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact", policy =>
@@ -32,14 +30,9 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Auth (placeholder - configurar depois)
+// Auth (placeholder - configure later)
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
-
-// Módulos independentes (cada um com seu schema no banco)
-builder.Services.AddInstrutoresModule(connectionString);
-builder.Services.AddAlunosModule(connectionString);
-builder.Services.AddAgendamentosModule(connectionString);
 
 var app = builder.Build();
 
