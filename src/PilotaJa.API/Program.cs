@@ -1,7 +1,13 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using PilotaJa.Modules.Instrutores;
+using PilotaJa.Modules.Alunos;
+using PilotaJa.Modules.Agendamentos;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? throw new InvalidOperationException("Connection string not found");
 
 // FastEndpoints
 builder.Services.AddFastEndpoints();
@@ -29,6 +35,11 @@ builder.Services.AddCors(options =>
 // Auth (placeholder - configurar depois)
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
+
+// Módulos independentes (cada um com seu schema no banco)
+builder.Services.AddInstrutoresModule(connectionString);
+builder.Services.AddAlunosModule(connectionString);
+builder.Services.AddAgendamentosModule(connectionString);
 
 var app = builder.Build();
 

@@ -19,38 +19,54 @@ PilotaJá é um aplicativo que permite:
 | **Banco de Dados** | SQL Server |
 | **Documentação API** | Swagger/OpenAPI |
 
-## 📁 Estrutura do Projeto
+## 📁 Estrutura do Projeto (Modular Monolith)
 
 ```
 PilotaJa/
 ├── src/
-│   ├── PilotaJa.API/           # Backend .NET
-│   │   ├── Domain/             # Entidades
-│   │   ├── Features/           # Endpoints (FastEndpoints)
-│   │   │   ├── Instrutores/
-│   │   │   ├── Alunos/
-│   │   │   ├── Agendamentos/
-│   │   │   └── Aulas/
-│   │   └── Infrastructure/     # DbContext, Configs
+│   ├── PilotaJa.API/                    # Host da API (FastEndpoints)
+│   │   ├── Features/                    # Endpoints HTTP
+│   │   └── Program.cs                   # Composição dos módulos
 │   │
-│   ├── PilotaJa.Web/           # Frontend React (Web)
-│   │   ├── src/
-│   │   │   ├── components/
-│   │   │   ├── pages/
-│   │   │   ├── services/
-│   │   │   └── hooks/
-│   │   └── package.json
+│   ├── PilotaJa.Modules.Instrutores/    # 📦 Módulo independente
+│   │   ├── Domain/                      # Entidades do módulo
+│   │   ├── Persistence/                 # DbContext próprio (schema: instrutores)
+│   │   ├── Contracts/                   # Interface pública (IInstrutoresModule)
+│   │   └── Features/                    # Endpoints do módulo
 │   │
-│   ├── PilotaJa.Mobile/        # App Mobile (.NET MAUI)
-│   │   ├── Views/              # Páginas XAML
-│   │   ├── ViewModels/         # MVVM ViewModels
-│   │   ├── Services/           # API, Auth
-│   │   └── Resources/          # Assets, Fonts
+│   ├── PilotaJa.Modules.Alunos/         # 📦 Módulo independente
+│   │   ├── Domain/
+│   │   ├── Persistence/                 # Schema: alunos
+│   │   └── Contracts/
 │   │
-│   └── PilotaJa.Shared/        # DTOs compartilhados
-│       └── DTOs/               # Usados por API, Web e Mobile
+│   ├── PilotaJa.Modules.Agendamentos/   # 📦 Módulo independente
+│   │   ├── Domain/
+│   │   ├── Persistence/                 # Schema: agendamentos
+│   │   └── Contracts/
+│   │
+│   ├── PilotaJa.Web/                    # Frontend React
+│   ├── PilotaJa.Mobile/                 # App MAUI (iOS + Android)
+│   └── PilotaJa.Shared/                 # DTOs compartilhados
 │
-└── docs/                        # Documentação adicional
+└── docs/
+```
+
+## 🔷 Arquitetura Modular
+
+Cada módulo é **independente**:
+- ✅ DbContext próprio (schema separado no banco)
+- ✅ Não acessa tabelas de outros módulos
+- ✅ Comunicação via contratos (interfaces)
+- ✅ Pode virar microserviço no futuro
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────────┐
+│ Instrutores │    │   Alunos    │    │  Agendamentos   │
+│   schema    │    │   schema    │    │     schema      │
+├─────────────┤    ├─────────────┤    ├─────────────────┤
+│IInstrutores │◄───│             │    │ usa contratos   │
+│   Module    │    │ IAlunosModule◄───│ dos outros      │
+└─────────────┘    └─────────────┘    └─────────────────┘
 ```
 
 ## 🚀 Como Rodar
