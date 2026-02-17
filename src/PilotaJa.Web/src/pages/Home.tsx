@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div className="container">
       <header>
-        <h1>🚗 PilotaJá</h1>
+        <img src="/logo.jpg" alt="PilotaJá" className="logo" style={{ maxWidth: '280px', marginBottom: '1rem' }} />
         <p>Encontre o instrutor de direção ideal para você</p>
       </header>
 
