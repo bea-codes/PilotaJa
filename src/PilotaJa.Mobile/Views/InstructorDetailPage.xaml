@@ -77,7 +77,7 @@
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="vm:DayAgenda">
                                 <Frame Margin="0,4" Padding="12" CornerRadius="8"
-                                       BackgroundColor="#374151">
+                                       BackgroundColor="{StaticResource InputBackground}">
                                     <Grid ColumnDefinitions="Auto,*,Auto">
                                         <VerticalStackLayout Grid.Column="0" WidthRequest="50">
                                             <Label Text="{Binding DayName}" FontAttributes="Bold"/>

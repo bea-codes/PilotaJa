@@ -39,87 +39,87 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <header className="bg-gray-800 shadow-lg">
+      <header className="bg-white shadow-lg">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/">
             <img src="/logo.png" alt="PilotaJá" className="h-10" />
           </Link>
-          <Link to="/" className="text-gray-400 hover:text-white">
+          <Link to="/" className="text-gray-600 hover:text-gray-900">
             ← Voltar
           </Link>
         </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-8">
-        <div className="bg-gray-800 rounded-xl p-8">
+        <div className="bg-white rounded-xl p-8">
           {/* Avatar & Name */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center text-4xl mb-4">
+            <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center text-4xl mb-4">
               {user.photoUrl 
                 ? <img src={user.photoUrl} alt={user.name} className="w-full h-full rounded-full object-cover" />
                 : '👤'
               }
             </div>
-            <h1 className="text-2xl font-bold text-white">{user.name}</h1>
-            <p className="text-gray-400">Aluno desde 2024</p>
+            <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
+            <p className="text-gray-600">Aluno desde 2024</p>
           </div>
 
           {/* Form / Display */}
           {editing ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-gray-400 mb-2">Nome completo</label>
+                <label className="block text-gray-600 mb-2">Nome completo</label>
                 <input
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full bg-gray-50 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-400 mb-2">E-mail</label>
+                <label className="block text-gray-600 mb-2">E-mail</label>
                 <input
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full bg-gray-50 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-400 mb-2">Telefone</label>
+                <label className="block text-gray-600 mb-2">Telefone</label>
                 <IMaskInput
                   mask="(00) 00000-0000"
                   value={form.phone}
                   unmask={false}
                   onAccept={(value) => setForm({ ...form, phone: value })}
                   placeholder="(11) 99999-9999"
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full bg-gray-50 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-400 mb-2">CPF</label>
+                <label className="block text-gray-600 mb-2">CPF</label>
                 <IMaskInput
                   mask="000.000.000-00"
                   value={form.taxId}
                   unmask={false}
                   onAccept={(value) => setForm({ ...form, taxId: value })}
                   placeholder="000.000.000-00"
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full bg-gray-50 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-400 mb-2">Data de nascimento</label>
+                <label className="block text-gray-600 mb-2">Data de nascimento</label>
                 <input
                   type="date"
                   value={form.dateOfBirth}
                   onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full bg-gray-50 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
@@ -132,7 +132,7 @@ export default function Profile() {
                 </button>
                 <button
                   onClick={() => { setForm(user); setEditing(false); }}
-                  className="flex-1 bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 rounded-lg transition"
+                  className="flex-1 bg-gray-600 hover:bg-gray-500 text-gray-900 font-bold py-3 rounded-lg transition"
                 >
                   Cancelar
                 </button>
@@ -140,24 +140,24 @@ export default function Profile() {
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="flex justify-between items-center py-3 border-b border-gray-700">
-                <span className="text-gray-400">📧 E-mail</span>
-                <span className="text-white">{user.email}</span>
+              <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                <span className="text-gray-600">📧 E-mail</span>
+                <span className="text-gray-900">{user.email}</span>
               </div>
 
-              <div className="flex justify-between items-center py-3 border-b border-gray-700">
-                <span className="text-gray-400">📱 Telefone</span>
-                <span className="text-white">{user.phone}</span>
+              <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                <span className="text-gray-600">📱 Telefone</span>
+                <span className="text-gray-900">{user.phone}</span>
               </div>
 
-              <div className="flex justify-between items-center py-3 border-b border-gray-700">
-                <span className="text-gray-400">🆔 CPF</span>
-                <span className="text-white">{user.taxId}</span>
+              <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                <span className="text-gray-600">🆔 CPF</span>
+                <span className="text-gray-900">{user.taxId}</span>
               </div>
 
-              <div className="flex justify-between items-center py-3 border-b border-gray-700">
-                <span className="text-gray-400">🎂 Nascimento</span>
-                <span className="text-white">
+              <div className="flex justify-between items-center py-3 border-b border-gray-200">
+                <span className="text-gray-600">🎂 Nascimento</span>
+                <span className="text-gray-900">
                   {formatDate(user.dateOfBirth)} ({calculateAge(user.dateOfBirth)} anos)
                 </span>
               </div>
@@ -176,17 +176,17 @@ export default function Profile() {
         <div className="grid grid-cols-2 gap-4 mt-6">
           <Link 
             to="/instructors"
-            className="bg-gray-800 hover:bg-gray-750 rounded-xl p-6 text-center transition"
+            className="bg-white hover:bg-gray-50 rounded-xl p-6 text-center transition"
           >
             <div className="text-3xl mb-2">🔍</div>
-            <div className="text-white font-medium">Buscar Instrutor</div>
+            <div className="text-gray-900 font-medium">Buscar Instrutor</div>
           </Link>
           <Link 
             to="/my-appointments"
-            className="bg-gray-800 hover:bg-gray-750 rounded-xl p-6 text-center transition"
+            className="bg-white hover:bg-gray-50 rounded-xl p-6 text-center transition"
           >
             <div className="text-3xl mb-2">📅</div>
-            <div className="text-white font-medium">Minhas Aulas</div>
+            <div className="text-gray-900 font-medium">Minhas Aulas</div>
           </Link>
         </div>
       </main>

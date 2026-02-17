@@ -111,33 +111,33 @@ export default function InstructorDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-gray-400">Carregando...</div>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-gray-600">Carregando...</div>
       </div>
     );
   }
 
   if (error || !instructor) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-red-400">Erro ao carregar instrutor</div>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-red-600">Erro ao carregar instrutor</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <header className="bg-gray-800 shadow-lg">
+      <header className="bg-white shadow-lg">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/">
             <img src="/logo.png" alt="PilotaJá" className="h-10" />
           </Link>
           <div className="flex items-center gap-4">
-            <Link to={`/instructor-dashboard/${id}`} className="text-yellow-400 hover:text-yellow-300 text-sm">
+            <Link to={`/instructor-dashboard/${id}`} className="text-yellow-600 hover:text-yellow-300 text-sm">
               🔧 Dashboard
             </Link>
-            <Link to="/instructors" className="text-gray-400 hover:text-white">
+            <Link to="/instructors" className="text-gray-600 hover:text-gray-900">
               ← Voltar
             </Link>
           </div>
@@ -146,33 +146,33 @@ export default function InstructorDetail() {
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         {/* Profile Card */}
-        <div className="bg-gray-800 rounded-xl p-8 mb-8">
+        <div className="bg-white rounded-xl p-8 mb-8">
           <div className="flex flex-col md:flex-row items-center gap-6">
-            <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center text-4xl">
+            <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center text-4xl">
               {instructor.photoUrl 
                 ? <img src={instructor.photoUrl} alt={instructor.name} className="w-full h-full rounded-full object-cover" />
                 : '👤'
               }
             </div>
             <div className="text-center md:text-left">
-              <h1 className="text-3xl font-bold text-white">{instructor.name}</h1>
-              <p className="text-gray-400">📍 {instructor.city}, {instructor.state}</p>
+              <h1 className="text-3xl font-bold text-gray-900">{instructor.name}</h1>
+              <p className="text-gray-600">📍 {instructor.city}, {instructor.state}</p>
             </div>
           </div>
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mt-8">
             <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-400">⭐ {instructor.rating.toFixed(1)}</div>
-              <div className="text-gray-400 text-sm">Avaliação</div>
+              <div className="text-2xl font-bold text-yellow-600">⭐ {instructor.rating.toFixed(1)}</div>
+              <div className="text-gray-600 text-sm">Avaliação</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">{instructor.totalLessons}</div>
-              <div className="text-gray-400 text-sm">Aulas</div>
+              <div className="text-2xl font-bold text-gray-900">{instructor.totalLessons}</div>
+              <div className="text-gray-600 text-sm">Aulas</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-400">R$ {instructor.hourlyRate.toFixed(2)}</div>
-              <div className="text-gray-400 text-sm">por hora</div>
+              <div className="text-2xl font-bold text-green-600">R$ {instructor.hourlyRate.toFixed(2)}</div>
+              <div className="text-gray-600 text-sm">por hora</div>
             </div>
           </div>
         </div>
@@ -181,24 +181,24 @@ export default function InstructorDetail() {
           {/* Info */}
           <div className="space-y-6">
             {instructor.bio && (
-              <div className="bg-gray-800 rounded-xl p-6">
-                <h2 className="text-xl font-bold text-white mb-3">Sobre</h2>
-                <p className="text-gray-400">{instructor.bio}</p>
+              <div className="bg-white rounded-xl p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-3">Sobre</h2>
+                <p className="text-gray-600">{instructor.bio}</p>
               </div>
             )}
 
-            <div className="bg-gray-800 rounded-xl p-6">
-              <h2 className="text-xl font-bold text-white mb-3">Informações</h2>
-              <ul className="space-y-2 text-gray-400">
+            <div className="bg-white rounded-xl p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-3">Informações</h2>
+              <ul className="space-y-2 text-gray-600">
                 <li><strong>CNH:</strong> Categoria {instructor.licenseCategory}</li>
                 <li><strong>Atende em:</strong> até {instructor.serviceRadiusKm}km</li>
                 <li><strong>Telefone:</strong> {instructor.phone}</li>
               </ul>
             </div>
 
-            <div className="bg-gray-800 rounded-xl p-6">
-              <h2 className="text-xl font-bold text-white mb-3">Horário de Trabalho</h2>
-              <ul className="space-y-1 text-gray-400 text-sm">
+            <div className="bg-white rounded-xl p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-3">Horário de Trabalho</h2>
+              <ul className="space-y-1 text-gray-600 text-sm">
                 {instructor.availabilities.map((a, i) => (
                   <li key={i}>
                     <strong>{weekDays[a.dayOfWeek]}:</strong> {a.startTime} - {a.endTime}
@@ -208,8 +208,8 @@ export default function InstructorDetail() {
             </div>
 
             {/* 7-day Agenda */}
-            <div className="bg-gray-800 rounded-xl p-6">
-              <h2 className="text-xl font-bold text-white mb-4">📅 Agenda (7 dias)</h2>
+            <div className="bg-white rounded-xl p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">📅 Agenda (7 dias)</h2>
               <div className="space-y-3">
                 {weekDates.map(date => {
                   const dateKey = formatDateKey(date);
@@ -220,14 +220,14 @@ export default function InstructorDetail() {
                   return (
                     <div 
                       key={dateKey} 
-                      className={`rounded-lg p-3 ${today ? 'bg-blue-900/30 border border-blue-500' : past ? 'bg-gray-700/50 opacity-60' : 'bg-gray-700'}`}
+                      className={`rounded-lg p-3 ${today ? 'bg-blue-50 border border-blue-400' : past ? 'bg-gray-100 opacity-60' : 'bg-gray-50'}`}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className={`font-medium ${today ? 'text-blue-400' : 'text-white'}`}>
+                        <span className={`font-medium ${today ? 'text-blue-600' : 'text-gray-900'}`}>
                           {weekDaysShort[date.getDay()]} {date.getDate()}/{date.getMonth() + 1}
                           {today && <span className="ml-2 text-xs bg-blue-500 px-2 py-0.5 rounded">HOJE</span>}
                         </span>
-                        <span className="text-gray-400 text-sm">
+                        <span className="text-gray-600 text-sm">
                           {dayAppointments.length === 0 ? 'Livre' : `${dayAppointments.length} aula${dayAppointments.length > 1 ? 's' : ''}`}
                         </span>
                       </div>
@@ -238,13 +238,13 @@ export default function InstructorDetail() {
                             .sort((a, b) => a.dateTime.localeCompare(b.dateTime))
                             .map(apt => {
                               const time = new Date(apt.dateTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                              const statusColor = apt.status === 'Confirmed' ? 'text-green-400' : apt.status === 'Pending' ? 'text-yellow-400' : 'text-gray-400';
+                              const statusColor = apt.status === 'Confirmed' ? 'text-green-600' : apt.status === 'Pending' ? 'text-yellow-600' : 'text-gray-600';
                               const statusIcon = apt.status === 'Confirmed' ? '✅' : apt.status === 'Pending' ? '⏳' : apt.status === 'Completed' ? '🏁' : '❌';
                               return (
                                 <div key={apt.id} className="flex items-center gap-2 text-sm">
-                                  <span className="text-gray-300">{time}</span>
+                                  <span className="text-gray-700">{time}</span>
                                   <span className={statusColor}>{statusIcon}</span>
-                                  <span className="text-gray-400 truncate">{apt.durationMinutes}min</span>
+                                  <span className="text-gray-600 truncate">{apt.durationMinutes}min</span>
                                 </div>
                               );
                             })}
@@ -258,46 +258,46 @@ export default function InstructorDetail() {
           </div>
 
           {/* Booking */}
-          <div className="bg-gray-800 rounded-xl p-6 h-fit">
-            <h2 className="text-xl font-bold text-white mb-6">📅 Agendar Aula</h2>
+          <div className="bg-white rounded-xl p-6 h-fit">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">📅 Agendar Aula</h2>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-gray-400 mb-2">Data</label>
+                <label className="block text-gray-600 mb-2">Data</label>
                 <input 
                   type="date" 
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full bg-gray-50 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-400 mb-2">Horário</label>
+                <label className="block text-gray-600 mb-2">Horário</label>
                 <input 
                   type="time" 
                   value={selectedTime}
                   onChange={(e) => setSelectedTime(e.target.value)}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full bg-gray-50 text-gray-900 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
                 />
               </div>
 
-              <div className="bg-gray-700 rounded-lg p-4">
-                <div className="flex justify-between text-gray-400">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex justify-between text-gray-600">
                   <span>Duração</span>
                   <span>50 minutos</span>
                 </div>
-                <div className="flex justify-between text-white font-bold text-lg mt-2">
+                <div className="flex justify-between text-gray-900 font-bold text-lg mt-2">
                   <span>Total</span>
-                  <span className="text-green-400">R$ {(instructor.hourlyRate * 50/60).toFixed(2)}</span>
+                  <span className="text-green-600">R$ {(instructor.hourlyRate * 50/60).toFixed(2)}</span>
                 </div>
               </div>
 
               <button 
                 onClick={handleBooking}
                 disabled={!selectedDate || !selectedTime || booking}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-4 rounded-lg transition"
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-gray-900 font-bold py-4 rounded-lg transition"
               >
                 {booking ? 'Agendando...' : '📅 Confirmar Agendamento'}
               </button>

@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:PilotaJa.Mobile.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="PilotaJa.Mobile.Views.ProfilePage"
              x:DataType="vm:ProfileViewModel"
              Title="{Binding Title}"
@@ -13,9 +14,8 @@
             <!-- Avatar -->
             <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                 <Frame WidthRequest="100" HeightRequest="100" CornerRadius="50" 
-                       BackgroundColor="#374151" Padding="0" HasShadow="False">
+                       BackgroundColor="{StaticResource Border}" Padding="0" HasShadow="False">
                     <Label Text="👤" FontSize="44" VerticalOptions="Center" HorizontalOptions="Center"/>
-                </Frame>
                 <Label Text="{Binding Name}" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
                 <Label Text="Aluno desde 2024" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
             </VerticalStackLayout>
@@ -31,19 +31,19 @@
                             <Label Text="📧 E-mail" TextColor="{StaticResource TextSecondary}"/>
                             <Label Grid.Column="1" Text="{Binding Email}" HorizontalTextAlignment="End"/>
                         </Grid>
-                        <BoxView HeightRequest="1" Color="#374151"/>
+                        <BoxView HeightRequest="1" Color="{StaticResource Border}"/>
                         
                         <Grid ColumnDefinitions="*,*" Padding="0,8">
                             <Label Text="📱 Telefone" TextColor="{StaticResource TextSecondary}"/>
                             <Label Grid.Column="1" Text="{Binding Phone}" HorizontalTextAlignment="End"/>
                         </Grid>
-                        <BoxView HeightRequest="1" Color="#374151"/>
+                        <BoxView HeightRequest="1" Color="{StaticResource Border}"/>
                         
                         <Grid ColumnDefinitions="*,*" Padding="0,8">
                             <Label Text="🆔 CPF" TextColor="{StaticResource TextSecondary}"/>
                             <Label Grid.Column="1" Text="{Binding TaxId}" HorizontalTextAlignment="End"/>
                         </Grid>
-                        <BoxView HeightRequest="1" Color="#374151"/>
+                        <BoxView HeightRequest="1" Color="{StaticResource Border}"/>
                         
                         <Grid ColumnDefinitions="*,*" Padding="0,8">
                             <Label Text="🎂 Nascimento" TextColor="{StaticResource TextSecondary}"/>
@@ -71,7 +71,7 @@
                         <VerticalStackLayout Spacing="4">
                             <Label Text="Nome completo" TextColor="{StaticResource TextSecondary}"/>
                             <Entry Text="{Binding Name}" 
-                                   BackgroundColor="#374151" 
+                                   BackgroundColor="{StaticResource Border}" 
                                    TextColor="White"/>
                         </VerticalStackLayout>
                         
@@ -79,7 +79,7 @@
                             <Label Text="E-mail" TextColor="{StaticResource TextSecondary}"/>
                             <Entry Text="{Binding Email}" 
                                    Keyboard="Email"
-                                   BackgroundColor="#374151" 
+                                   BackgroundColor="{StaticResource Border}" 
                                    TextColor="White"/>
                         </VerticalStackLayout>
                         
@@ -87,23 +87,27 @@
                             <Label Text="Telefone" TextColor="{StaticResource TextSecondary}"/>
                             <Entry Text="{Binding Phone}" 
                                    Keyboard="Telephone"
-                                   Placeholder="(11) 99999-9999"
-                                   BackgroundColor="#374151" 
-                                   TextColor="White"/>
+                                   Placeholder="(11) 99999-9999">
+                                <Entry.Behaviors>
+                                    <toolkit:MaskedBehavior Mask="(XX) XXXXX-XXXX" UnmaskedCharacter="X"/>
+                                </Entry.Behaviors>
+                            </Entry>
                         </VerticalStackLayout>
                         
                         <VerticalStackLayout Spacing="4">
                             <Label Text="CPF" TextColor="{StaticResource TextSecondary}"/>
                             <Entry Text="{Binding TaxId}" 
-                                   Placeholder="000.000.000-00"
-                                   BackgroundColor="#374151" 
-                                   TextColor="White"/>
+                                   Placeholder="000.000.000-00">
+                                <Entry.Behaviors>
+                                    <toolkit:MaskedBehavior Mask="XXX.XXX.XXX-XX" UnmaskedCharacter="X"/>
+                                </Entry.Behaviors>
+                            </Entry>
                         </VerticalStackLayout>
                         
                         <VerticalStackLayout Spacing="4">
                             <Label Text="Data de nascimento" TextColor="{StaticResource TextSecondary}"/>
                             <DatePicker Date="{Binding DateOfBirth}" 
-                                        BackgroundColor="#374151" 
+                                        BackgroundColor="{StaticResource Border}" 
                                         TextColor="White"/>
                         </VerticalStackLayout>
                         
