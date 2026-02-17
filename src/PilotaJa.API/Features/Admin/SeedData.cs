@@ -8,13 +8,16 @@ public class SeedDataEndpoint : EndpointWithoutRequest
 {
     private readonly IRepository<Instructor> _instructorRepo;
     private readonly IRepository<Student> _studentRepo;
+    private readonly IRepository<Appointment> _appointmentRepo;
 
     public SeedDataEndpoint(
         IRepository<Instructor> instructorRepo,
-        IRepository<Student> studentRepo)
+        IRepository<Student> studentRepo,
+        IRepository<Appointment> appointmentRepo)
     {
         _instructorRepo = instructorRepo;
         _studentRepo = studentRepo;
+        _appointmentRepo = appointmentRepo;
     }
 
     public override void Configure()
@@ -117,22 +120,91 @@ public class SeedDataEndpoint : EndpointWithoutRequest
             await _instructorRepo.CreateAsync(instructor);
         }
 
-        // Sample student
-        var student = new Student
+        // Sample students
+        var students = new List<Student>
         {
-            Name = "Ana Costa",
-            Email = "ana.costa@email.com",
-            Phone = "(11) 98888-1111",
-            TaxId = "123.456.789-00",
-            DateOfBirth = new DateTime(1995, 5, 15)
+            new()
+            {
+                Name = "Ana Costa",
+                Email = "ana.costa@email.com",
+                Phone = "(11) 98888-1111",
+                TaxId = "123.456.789-00",
+                DateOfBirth = new DateTime(1995, 5, 15)
+            },
+            new()
+            {
+                Name = "Pedro Souza",
+                Email = "pedro.souza@email.com",
+                Phone = "(11) 98888-2222",
+                TaxId = "987.654.321-00",
+                DateOfBirth = new DateTime(2000, 3, 20)
+            },
+            new()
+            {
+                Name = "Lucia Ferreira",
+                Email = "lucia.ferreira@email.com",
+                Phone = "(11) 98888-3333",
+                TaxId = "456.789.123-00",
+                DateOfBirth = new DateTime(1998, 8, 10)
+            }
         };
-        await _studentRepo.CreateAsync(student);
+
+        foreach (var s in students)
+        {
+            await _studentRepo.CreateAsync(s);
+        }
+
+        // Sample appointments (pending for first instructor)
+        var firstInstructor = instructors[0];
+        var appointments = new List<Appointment>
+        {
+            new()
+            {
+                InstructorId = firstInstructor.Id,
+                StudentId = students[0].Id,
+                DateTime = DateTime.UtcNow.AddDays(2).Date.AddHours(9),
+                DurationMinutes = 50,
+                Price = firstInstructor.HourlyRate * 50 / 60,
+                Status = AppointmentStatus.Pending,
+                Notes = "Primeira aula, nunca dirigi antes",
+                MeetingAddress = "Av. Paulista, 1000 - São Paulo"
+            },
+            new()
+            {
+                InstructorId = firstInstructor.Id,
+                StudentId = students[1].Id,
+                DateTime = DateTime.UtcNow.AddDays(3).Date.AddHours(14),
+                DurationMinutes = 50,
+                Price = firstInstructor.HourlyRate * 50 / 60,
+                Status = AppointmentStatus.Pending,
+                Notes = "Preciso treinar baliza",
+                MeetingAddress = "Rua Augusta, 500 - São Paulo"
+            },
+            new()
+            {
+                InstructorId = firstInstructor.Id,
+                StudentId = students[2].Id,
+                DateTime = DateTime.UtcNow.AddDays(1).Date.AddHours(16),
+                DurationMinutes = 100,
+                Price = firstInstructor.HourlyRate * 100 / 60,
+                Status = AppointmentStatus.Confirmed,
+                MeetingAddress = "Shopping Ibirapuera"
+            }
+        };
+
+        foreach (var a in appointments)
+        {
+            await _appointmentRepo.CreateAsync(a);
+        }
 
         await SendAsync(new 
         { 
             Message = "Database seeded successfully",
             InstructorsCreated = instructors.Count,
-            StudentsCreated = 1
+            StudentsCreated = students.Count,
+            AppointmentsCreated = appointments.Count,
+            TestInstructorId = firstInstructor.Id,
+            DashboardUrl = $"/instructor-dashboard/{firstInstructor.Id}"
         }, cancellation: ct);
     }
 }

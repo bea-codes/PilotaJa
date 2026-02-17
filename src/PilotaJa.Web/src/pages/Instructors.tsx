@@ -26,7 +26,7 @@ export default function Instructors() {
       <header className="bg-gray-800 shadow-lg">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/">
-            <img src="/logo.jpg" alt="PilotaJá" className="h-10" />
+            <img src="/logo.png" alt="PilotaJá" className="h-10" />
           </Link>
           <Link to="/" className="text-gray-400 hover:text-white">
             ← Voltar

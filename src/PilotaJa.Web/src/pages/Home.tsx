@@ -6,7 +6,7 @@ export default function Home() {
       {/* Header */}
       <header className="bg-gray-800 shadow-lg">
         <div className="max-w-6xl mx-auto px-4 py-6">
-          <img src="/logo.jpg" alt="PilotaJá" className="h-16 mx-auto" />
+          <img src="/logo.png" alt="PilotaJá" className="h-16 mx-auto" />
         </div>
       </header>
 
