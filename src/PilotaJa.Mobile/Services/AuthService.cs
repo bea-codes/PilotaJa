@@ -7,6 +7,7 @@ public class AuthService : IAuthService
 {
     private readonly HttpClient _httpClient;
     private const string TokenKey = "auth_token";
+    private const string RefreshTokenKey = "refresh_token";
     private const string BaseUrl = "http://10.0.2.2:5000";
 
     public AuthService()
@@ -16,12 +17,25 @@ public class AuthService : IAuthService
             BaseAddress = new Uri(BaseUrl)
         };
         
-        // Carregar token salvo
-        Token = Preferences.Get(TokenKey, null);
+        // Load saved token from secure storage
+        LoadTokenAsync().ConfigureAwait(false);
     }
 
     public bool IsLoggedIn => !string.IsNullOrEmpty(Token);
     public string? Token { get; private set; }
+
+    private async Task LoadTokenAsync()
+    {
+        try
+        {
+            Token = await SecureStorage.GetAsync(TokenKey);
+        }
+        catch (Exception)
+        {
+            // SecureStorage not available (older devices, etc.)
+            Token = null;
+        }
+    }
 
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
@@ -29,19 +43,46 @@ public class AuthService : IAuthService
         response.EnsureSuccessStatusCode();
 
         var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>()
-            ?? throw new Exception("Erro no login");
+            ?? throw new Exception("Login failed");
 
-        // Salvar token
-        Token = loginResponse.Token;
-        Preferences.Set(TokenKey, Token);
+        // Save tokens securely
+        await SaveTokensAsync(loginResponse.Token, loginResponse.RefreshToken);
 
         return loginResponse;
     }
 
-    public Task LogoutAsync()
+    private async Task SaveTokensAsync(string token, string refreshToken)
+    {
+        try
+        {
+            await SecureStorage.SetAsync(TokenKey, token);
+            await SecureStorage.SetAsync(RefreshTokenKey, refreshToken);
+            Token = token;
+        }
+        catch (Exception)
+        {
+            // Fallback to Preferences if SecureStorage fails
+            Preferences.Set(TokenKey, token);
+            Preferences.Set(RefreshTokenKey, refreshToken);
+            Token = token;
+        }
+    }
+
+    public async Task LogoutAsync()
     {
         Token = null;
-        Preferences.Remove(TokenKey);
-        return Task.CompletedTask;
+        
+        try
+        {
+            SecureStorage.Remove(TokenKey);
+            SecureStorage.Remove(RefreshTokenKey);
+        }
+        catch (Exception)
+        {
+            Preferences.Remove(TokenKey);
+            Preferences.Remove(RefreshTokenKey);
+        }
+        
+        await Task.CompletedTask;
     }
 }
