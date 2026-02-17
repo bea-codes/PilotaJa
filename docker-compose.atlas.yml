@@ -1,0 +1,22 @@
+# Use this when connecting to MongoDB Atlas (external)
+# Run: docker-compose -f docker-compose.atlas.yml up -d
+
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./src
+      dockerfile: PilotaJa.API/Dockerfile
+    container_name: pilotaja-api
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - MongoDB__ConnectionString=${MONGODB_CONNECTION_STRING}
+      - MongoDB__DatabaseName=${MONGODB_DATABASE:-PilotaJa}
+    restart: unless-stopped
+
+# Create a .env file with:
+# MONGODB_CONNECTION_STRING=mongodb+srv://user:pass@cluster.mongodb.net/
+# MONGODB_DATABASE=PilotaJa
