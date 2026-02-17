@@ -77,6 +77,20 @@ public class ApiService : IApiService
             ?? [];
     }
 
+    public async Task<List<InstructorAppointmentDto>> GetInstructorAppointmentsAsync(Guid instructorId)
+    {
+        var response = await _httpClient.GetAsync($"/api/instructors/{instructorId}/appointments");
+        response.EnsureSuccessStatusCode();
+        
+        var result = await response.Content.ReadFromJsonAsync<InstructorAppointmentsResponse>(_jsonOptions);
+        return result?.Appointments ?? [];
+    }
+
+    private class InstructorAppointmentsResponse
+    {
+        public List<InstructorAppointmentDto> Appointments { get; set; } = [];
+    }
+
     public async Task<CreateAppointmentResponse> CreateAppointmentAsync(CreateAppointmentRequest request)
     {
         AddAuthHeader();

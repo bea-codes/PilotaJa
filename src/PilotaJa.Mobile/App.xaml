@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="PilotaJa.Mobile.App">
     <Application.Resources>
         <ResourceDictionary>
-            <!-- Cores -->
+            <!-- Cores (Dark Theme) -->
             <Color x:Key="Primary">#2563EB</Color>
             <Color x:Key="PrimaryDark">#1D4ED8</Color>
             <Color x:Key="Secondary">#10B981</Color>
-            <Color x:Key="Background">#F5F5F5</Color>
-            <Color x:Key="Surface">#FFFFFF</Color>
-            <Color x:Key="TextPrimary">#333333</Color>
-            <Color x:Key="TextSecondary">#666666</Color>
+            <Color x:Key="Background">#111827</Color>
+            <Color x:Key="Surface">#1F2937</Color>
+            <Color x:Key="TextPrimary">#FFFFFF</Color>
+            <Color x:Key="TextSecondary">#9CA3AF</Color>
+            <Color x:Key="Accent">#3B82F6</Color>
+            <Color x:Key="TodayBackground">#1E3A5F</Color>
+            
+            <!-- Converters -->
+            <toolkit:InvertedBoolConverter x:Key="InverseBoolConverter"/>
+            <toolkit:IsNotNullConverter x:Key="IsNotNullConverter"/>
             
             <!-- Estilos -->
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource TextPrimary}"/>
+            </Style>
+            
             <Style TargetType="Label" x:Key="TitleStyle">
                 <Setter Property="FontSize" Value="24"/>
                 <Setter Property="FontAttributes" Value="Bold"/>
@@ -31,6 +42,12 @@
                 <Setter Property="CornerRadius" Value="8"/>
                 <Setter Property="Padding" Value="16,12"/>
                 <Setter Property="FontAttributes" Value="Bold"/>
+            </Style>
+            
+            <Style TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="#374151"/>
+                <Setter Property="TextColor" Value="White"/>
+                <Setter Property="PlaceholderColor" Value="#9CA3AF"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

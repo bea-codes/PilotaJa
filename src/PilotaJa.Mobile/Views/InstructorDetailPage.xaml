@@ -68,6 +68,47 @@
                 </VerticalStackLayout>
             </Frame>
 
+            <!-- 7-Day Agenda -->
+            <Frame BackgroundColor="{StaticResource Surface}" CornerRadius="12" Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="📅 Agenda (7 dias)" FontAttributes="Bold" FontSize="16"/>
+                    
+                    <CollectionView ItemsSource="{Binding WeekAgenda}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="vm:DayAgenda">
+                                <Frame Margin="0,4" Padding="12" CornerRadius="8"
+                                       BackgroundColor="#374151">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <VerticalStackLayout Grid.Column="0" WidthRequest="50">
+                                            <Label Text="{Binding DayName}" FontAttributes="Bold"/>
+                                            <Label Text="{Binding DayNumber}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                                        
+                                        <VerticalStackLayout Grid.Column="1" Margin="12,0">
+                                            <CollectionView ItemsSource="{Binding Appointments}" SelectionMode="None">
+                                                <CollectionView.ItemTemplate>
+                                                    <DataTemplate x:DataType="vm:AppointmentSummary">
+                                                        <HorizontalStackLayout Spacing="8">
+                                                            <Label Text="{Binding Time}" FontSize="12"/>
+                                                            <Label Text="{Binding StatusIcon}" FontSize="12"/>
+                                                            <Label Text="{Binding DurationMinutes, StringFormat='{0}min'}" 
+                                                                   FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                                                        </HorizontalStackLayout>
+                                                    </DataTemplate>
+                                                </CollectionView.ItemTemplate>
+                                            </CollectionView>
+                                        </VerticalStackLayout>
+                                        
+                                        <Label Grid.Column="2" Text="{Binding Status}" 
+                                               FontSize="12" TextColor="{StaticResource TextSecondary}"
+                                               VerticalOptions="Center"/>
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
             <!-- Book Lesson -->
             <Frame BackgroundColor="{StaticResource Surface}" CornerRadius="12" Padding="16">
                 <VerticalStackLayout Spacing="16">
