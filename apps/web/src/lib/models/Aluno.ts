@@ -9,6 +9,7 @@ export interface IAluno extends Document {
   dataNascimento: Date;
   categoriaDesejada: string;
   status: 'ativo' | 'concluido' | 'cancelado';
+  fotoUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,6 +24,7 @@ const AlunoSchema = new Schema<IAluno>(
     dataNascimento: { type: Date, required: true },
     categoriaDesejada: { type: String, required: true },
     status: { type: String, enum: ['ativo', 'concluido', 'cancelado'], default: 'ativo' },
+    fotoUrl: { type: String },
   },
   { timestamps: true }
 );

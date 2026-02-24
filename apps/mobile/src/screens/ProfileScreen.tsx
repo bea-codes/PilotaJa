@@ -55,11 +55,12 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
       setNome(data.nome || '');
       setEmail(data.email || '');
       setTelefone(data.telefone || '');
+      setFoto(data.fotoUrl || null);
       setOriginalData({ 
         nome: data.nome || '', 
         email: data.email || '', 
         telefone: data.telefone || '',
-        foto: null 
+        foto: data.fotoUrl || null 
       });
     } catch (error) {
       console.error('Erro ao carregar perfil:', error);
@@ -152,11 +153,18 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
 
     setSaving(true);
     try {
-      // TODO: Implementar API de atualização com foto
-      // await alunosService.atualizar(MOCK_USER.alunoId, { nome, email, telefone, foto });
+      // Prepara dados para atualização
+      const updateData: any = {};
+      if (nome !== originalData.nome) updateData.nome = nome;
+      if (email !== originalData.email) updateData.email = email;
+      if (telefone !== originalData.telefone) updateData.telefone = telefone;
+      if (foto !== originalData.foto) updateData.fotoUrl = foto;
       
-      // Atualiza local
-      setAluno(prev => prev ? { ...prev, nome, email, telefone } : null);
+      // Chama API de atualização
+      const updatedAluno = await alunosService.atualizar(MOCK_USER.alunoId, updateData);
+      
+      // Atualiza estado local
+      setAluno(updatedAluno);
       setOriginalData({ nome, email, telefone, foto });
       Alert.alert('Sucesso', 'Perfil atualizado!');
     } catch (error: any) {

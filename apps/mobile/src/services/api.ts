@@ -104,6 +104,14 @@ export type Aluno = {
   autoescolaId?: string;
   categoriaDesejada?: string;
   status?: string;
+  fotoUrl?: string;
+};
+
+export type UpdateAlunoData = {
+  nome?: string;
+  email?: string;
+  telefone?: string;
+  fotoUrl?: string;
 };
 
 export const alunosService = {
@@ -114,4 +122,7 @@ export const alunosService = {
   
   buscarPorId: (id: string) => 
     request<Aluno>(API_ENDPOINTS.alunoById(id)),
+    
+  atualizar: (id: string, data: UpdateAlunoData) =>
+    request<Aluno>(API_ENDPOINTS.alunoById(id), { method: 'PATCH', body: data }),
 };
