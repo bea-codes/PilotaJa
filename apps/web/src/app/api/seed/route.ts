@@ -39,11 +39,8 @@ export async function POST(request: NextRequest) {
         email: 'carlos@pilotaja.com.br',
         telefone: '(11) 98888-1111',
         autoescolaId: autoescola._id,
-        cnh: {
-          numero: '12345678900',
-          categoria: 'D',
-          validade: new Date('2028-12-31'),
-        },
+        cnh: '12345678900',
+        categorias: ['D'],
         ativo: true,
       },
       {
@@ -51,11 +48,8 @@ export async function POST(request: NextRequest) {
         email: 'maria@pilotaja.com.br',
         telefone: '(11) 98888-2222',
         autoescolaId: autoescola._id,
-        cnh: {
-          numero: '12345678901',
-          categoria: 'B',
-          validade: new Date('2027-06-30'),
-        },
+        cnh: '12345678901',
+        categorias: ['B'],
         ativo: true,
       },
       {
@@ -63,11 +57,8 @@ export async function POST(request: NextRequest) {
         email: 'joao@pilotaja.com.br',
         telefone: '(11) 98888-3333',
         autoescolaId: autoescola._id,
-        cnh: {
-          numero: '12345678902',
-          categoria: 'AB',
-          validade: new Date('2029-03-15'),
-        },
+        cnh: '12345678902',
+        categorias: ['A', 'B'],
         ativo: true,
       },
     ]);
@@ -80,8 +71,8 @@ export async function POST(request: NextRequest) {
       cpf: '123.456.789-00',
       autoescolaId: autoescola._id,
       dataNascimento: new Date('1990-01-01'),
-      categoria: 'B',
-      ativo: true,
+      categoriaDesejada: 'B',
+      status: 'ativo',
     });
 
     // 4. Criar algumas aulas de exemplo
