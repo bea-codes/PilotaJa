@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
 
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'Email and password required' },
+        { error: 'E-mail e senha são obrigatórios' },
         { status: 400 }
       );
     }
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const user = await User.findOne({ email, active: true });
     if (!user) {
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { error: 'E-mail ou senha incorretos' },
         { status: 401 }
       );
     }
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { error: 'E-mail ou senha incorretos' },
         { status: 401 }
       );
     }

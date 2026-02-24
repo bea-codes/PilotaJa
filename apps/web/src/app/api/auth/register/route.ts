@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     // Validation
     if (!name || !email || !phone || !cpf || !password) {
       return NextResponse.json(
-        { error: 'Required fields: name, email, phone, cpf, password' },
+        { error: 'Preencha todos os campos obrigatórios' },
         { status: 400 }
       );
     }
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     let drivingSchool = await DrivingSchool.findOne();
     if (!drivingSchool) {
       return NextResponse.json(
-        { error: 'No driving school registered in the system' },
+        { error: 'Nenhuma autoescola cadastrada no sistema' },
         { status: 400 }
       );
     }
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     });
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Email already registered' },
+        { error: 'Este e-mail já está cadastrado' },
         { status: 409 }
       );
     }
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     });
     if (existingStudent) {
       return NextResponse.json(
-        { error: 'CPF already registered' },
+        { error: 'Este CPF já está cadastrado' },
         { status: 409 }
       );
     }
