@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 
 type Props = {
@@ -47,7 +48,16 @@ export default function ScheduleScreen({ navigation }: Props) {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
+      {/* Header com botão voltar */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Text style={styles.backText}>← Voltar</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Agendar Aula</Text>
+        <View style={styles.headerSpacer} />
+      </View>
+      <ScrollView style={styles.container}>
       {/* Seleção de Data */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>📅 Escolha o dia</Text>
@@ -135,10 +145,39 @@ export default function ScheduleScreen({ navigation }: Props) {
 
       <View style={styles.bottomPadding} />
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#007AFF',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  backButton: {
+    padding: 4,
+  },
+  backText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  headerSpacer: {
+    width: 60,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
