@@ -1,198 +1,198 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import { Autoescola, Instrutor, Aluno, Aula } from '@/lib/models';
+import { DrivingSchool, Instructor, Student, Lesson } from '@/lib/models';
 
-// POST /api/seed - Popula dados iniciais para testes
+// POST /api/seed - Populate initial data for testing
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
 
-    // Verifica se já existe dados
-    const existingAutoescola = await Autoescola.findOne();
-    if (existingAutoescola) {
+    // Check if data already exists
+    const existingSchool = await DrivingSchool.findOne();
+    if (existingSchool) {
       return NextResponse.json({ 
-        message: 'Dados já existem. Use DELETE primeiro para limpar.',
-        autoescola: existingAutoescola
+        message: 'Data already exists. Use DELETE first to clear.',
+        drivingSchool: existingSchool
       }, { status: 200 });
     }
 
-    // 1. Criar Autoescola
-    const autoescola = await Autoescola.create({
-      nome: 'Auto Escola PilotaJá',
+    // 1. Create Driving School
+    const drivingSchool = await DrivingSchool.create({
+      name: 'PilotaJá Driving School',
       cnpj: '12.345.678/0001-99',
-      endereco: {
-        rua: 'Rua das Flores',
-        numero: '123',
-        bairro: 'Centro',
-        cidade: 'São Paulo',
-        estado: 'SP',
-        cep: '01234-567',
+      address: {
+        street: 'Rua das Flores',
+        number: '123',
+        neighborhood: 'Centro',
+        city: 'São Paulo',
+        state: 'SP',
+        zipCode: '01234-567',
       },
-      telefone: '(11) 99999-9999',
-      email: 'contato@pilotaja.com.br',
+      phone: '(11) 99999-9999',
+      email: 'contact@pilotaja.com.br',
     });
 
-    // 2. Criar Instrutores
-    const instrutores = await Instrutor.create([
+    // 2. Create Instructors
+    const instructors = await Instructor.create([
       {
-        nome: 'Carlos Silva',
+        name: 'Carlos Silva',
         email: 'carlos@pilotaja.com.br',
-        telefone: '(11) 98888-1111',
-        autoescolaId: autoescola._id,
-        cnh: '12345678900',
-        categorias: ['D'],
-        ativo: true,
+        phone: '(11) 98888-1111',
+        drivingSchoolId: drivingSchool._id,
+        license: '12345678900',
+        categories: ['D'],
+        active: true,
       },
       {
-        nome: 'Maria Santos',
+        name: 'Maria Santos',
         email: 'maria@pilotaja.com.br',
-        telefone: '(11) 98888-2222',
-        autoescolaId: autoescola._id,
-        cnh: '12345678901',
-        categorias: ['B'],
-        ativo: true,
+        phone: '(11) 98888-2222',
+        drivingSchoolId: drivingSchool._id,
+        license: '12345678901',
+        categories: ['B'],
+        active: true,
       },
       {
-        nome: 'João Oliveira',
+        name: 'João Oliveira',
         email: 'joao@pilotaja.com.br',
-        telefone: '(11) 98888-3333',
-        autoescolaId: autoescola._id,
-        cnh: '12345678902',
-        categorias: ['A', 'B'],
-        ativo: true,
+        phone: '(11) 98888-3333',
+        drivingSchoolId: drivingSchool._id,
+        license: '12345678902',
+        categories: ['A', 'B'],
+        active: true,
       },
     ]);
 
-    // 3. Criar Aluno (Cassio)
-    const aluno = await Aluno.create({
-      nome: 'Cassio Basile',
+    // 3. Create Student (Cassio)
+    const student = await Student.create({
+      name: 'Cassio Basile',
       email: 'cassio@email.com',
-      telefone: '(11) 97777-7777',
+      phone: '(11) 97777-7777',
       cpf: '123.456.789-00',
-      autoescolaId: autoescola._id,
-      dataNascimento: new Date('1990-01-01'),
-      categoriaDesejada: 'B',
-      status: 'ativo',
+      drivingSchoolId: drivingSchool._id,
+      birthDate: new Date('1990-01-01'),
+      desiredCategory: 'B',
+      status: 'active',
     });
 
-    // 4. Criar algumas aulas de exemplo
-    const hoje = new Date();
-    const amanha = new Date(hoje);
-    amanha.setDate(hoje.getDate() + 1);
-    const semanaQueVem = new Date(hoje);
-    semanaQueVem.setDate(hoje.getDate() + 7);
+    // 4. Create sample lessons
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    const nextWeek = new Date(today);
+    nextWeek.setDate(today.getDate() + 7);
 
-    const aulas = await Aula.create([
+    const lessons = await Lesson.create([
       {
-        autoescolaId: autoescola._id,
-        alunoId: aluno._id,
-        instrutorId: instrutores[0]._id,
-        dataHora: new Date(amanha.setHours(10, 0, 0, 0)),
-        duracao: 50,
-        tipo: 'pratica',
-        status: 'agendada',
+        drivingSchoolId: drivingSchool._id,
+        studentId: student._id,
+        instructorId: instructors[0]._id,
+        dateTime: new Date(tomorrow.setHours(10, 0, 0, 0)),
+        duration: 50,
+        type: 'practical',
+        status: 'scheduled',
       },
       {
-        autoescolaId: autoescola._id,
-        alunoId: aluno._id,
-        instrutorId: instrutores[1]._id,
-        dataHora: new Date(semanaQueVem.setHours(14, 0, 0, 0)),
-        duracao: 50,
-        tipo: 'pratica',
-        status: 'agendada',
+        drivingSchoolId: drivingSchool._id,
+        studentId: student._id,
+        instructorId: instructors[1]._id,
+        dateTime: new Date(nextWeek.setHours(14, 0, 0, 0)),
+        duration: 50,
+        type: 'practical',
+        status: 'scheduled',
       },
-      // Algumas aulas passadas (realizadas)
+      // Past lessons (completed)
       {
-        autoescolaId: autoescola._id,
-        alunoId: aluno._id,
-        instrutorId: instrutores[0]._id,
-        dataHora: new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000), // 7 dias atrás
-        duracao: 50,
-        tipo: 'pratica',
-        status: 'realizada',
+        drivingSchoolId: drivingSchool._id,
+        studentId: student._id,
+        instructorId: instructors[0]._id,
+        dateTime: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000),
+        duration: 50,
+        type: 'practical',
+        status: 'completed',
       },
       {
-        autoescolaId: autoescola._id,
-        alunoId: aluno._id,
-        instrutorId: instrutores[2]._id,
-        dataHora: new Date(hoje.getTime() - 14 * 24 * 60 * 60 * 1000), // 14 dias atrás
-        duracao: 50,
-        tipo: 'pratica',
-        status: 'realizada',
+        drivingSchoolId: drivingSchool._id,
+        studentId: student._id,
+        instructorId: instructors[2]._id,
+        dateTime: new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000),
+        duration: 50,
+        type: 'practical',
+        status: 'completed',
       },
     ]);
 
     return NextResponse.json({
-      message: 'Dados criados com sucesso!',
+      message: 'Data created successfully!',
       data: {
-        autoescola: {
-          _id: autoescola._id,
-          nome: autoescola.nome,
+        drivingSchool: {
+          _id: drivingSchool._id,
+          name: drivingSchool.name,
         },
-        instrutores: instrutores.map((i: any) => ({ _id: i._id, nome: i.nome })),
-        aluno: {
-          _id: aluno._id,
-          nome: aluno.nome,
+        instructors: instructors.map((i: any) => ({ _id: i._id, name: i.name })),
+        student: {
+          _id: student._id,
+          name: student.name,
         },
-        aulas: aulas.length,
+        lessons: lessons.length,
       },
-      // IDs para usar no app mobile
+      // IDs to use in mobile app
       config: {
-        autoescolaId: autoescola._id.toString(),
-        alunoId: aluno._id.toString(),
+        drivingSchoolId: drivingSchool._id.toString(),
+        studentId: student._id.toString(),
       }
     }, { status: 201 });
 
   } catch (error) {
-    console.error('Erro ao criar seed:', error);
-    return NextResponse.json({ error: 'Erro ao criar dados iniciais', details: String(error) }, { status: 500 });
+    console.error('Error creating seed:', error);
+    return NextResponse.json({ error: 'Error creating initial data', details: String(error) }, { status: 500 });
   }
 }
 
-// DELETE /api/seed - Limpa todos os dados (cuidado!)
+// DELETE /api/seed - Clear all data (careful!)
 export async function DELETE(request: NextRequest) {
   try {
     await connectDB();
 
     await Promise.all([
-      Aula.deleteMany({}),
-      Aluno.deleteMany({}),
-      Instrutor.deleteMany({}),
-      Autoescola.deleteMany({}),
+      Lesson.deleteMany({}),
+      Student.deleteMany({}),
+      Instructor.deleteMany({}),
+      DrivingSchool.deleteMany({}),
     ]);
 
-    return NextResponse.json({ message: 'Todos os dados foram removidos' });
+    return NextResponse.json({ message: 'All data removed' });
   } catch (error) {
-    console.error('Erro ao limpar dados:', error);
-    return NextResponse.json({ error: 'Erro ao limpar dados' }, { status: 500 });
+    console.error('Error clearing data:', error);
+    return NextResponse.json({ error: 'Error clearing data' }, { status: 500 });
   }
 }
 
-// GET /api/seed - Verifica status dos dados
+// GET /api/seed - Check data status
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
 
-    const [autoescolas, instrutores, alunos, aulas] = await Promise.all([
-      Autoescola.countDocuments(),
-      Instrutor.countDocuments(),
-      Aluno.countDocuments(),
-      Aula.countDocuments(),
+    const [drivingSchools, instructors, students, lessons] = await Promise.all([
+      DrivingSchool.countDocuments(),
+      Instructor.countDocuments(),
+      Student.countDocuments(),
+      Lesson.countDocuments(),
     ]);
 
-    const aluno = await Aluno.findOne();
-    const autoescola = await Autoescola.findOne();
+    const student = await Student.findOne();
+    const drivingSchool = await DrivingSchool.findOne();
 
     return NextResponse.json({
-      status: autoescolas > 0 ? 'populated' : 'empty',
-      counts: { autoescolas, instrutores, alunos, aulas },
-      config: aluno && autoescola ? {
-        autoescolaId: autoescola._id.toString(),
-        alunoId: aluno._id.toString(),
+      status: drivingSchools > 0 ? 'populated' : 'empty',
+      counts: { drivingSchools, instructors, students, lessons },
+      config: student && drivingSchool ? {
+        drivingSchoolId: drivingSchool._id.toString(),
+        studentId: student._id.toString(),
       } : null,
     });
   } catch (error) {
-    console.error('Erro ao verificar seed:', error);
-    return NextResponse.json({ error: 'Erro ao verificar dados' }, { status: 500 });
+    console.error('Error checking seed:', error);
+    return NextResponse.json({ error: 'Error checking data' }, { status: 500 });
   }
 }

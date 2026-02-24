@@ -1,11 +1,11 @@
-// Configuração da API
-// Em desenvolvimento, use o IP local do seu PC (rode ipconfig no Windows)
-// Em produção, aponte para a URL do Vercel
+// API Configuration
+// In development, use your PC's local IP (run ipconfig on Windows)
+// In production, point to Vercel URL
 
-const DEV_API_URL = 'https://pilota-ja-web.vercel.app'; // Dev também usa Vercel
-const PROD_API_URL = 'https://pilota-ja-web.vercel.app'; // Produção
+const DEV_API_URL = 'https://pilota-ja-web.vercel.app'; // Dev also uses Vercel
+const PROD_API_URL = 'https://pilota-ja-web.vercel.app'; // Production
 
-// Detecta se está em desenvolvimento
+// Detect if in development
 const isDev = __DEV__;
 
 export const API_URL = isDev ? DEV_API_URL : PROD_API_URL;
@@ -15,21 +15,21 @@ export const API_ENDPOINTS = {
   login: '/api/auth/login',
   register: '/api/auth/register',
   
-  // Aulas
-  aulas: '/api/aulas',
-  aulaById: (id: string) => `/api/aulas/${id}`,
+  // Lessons
+  lessons: '/api/lessons',
+  lessonById: (id: string) => `/api/lessons/${id}`,
   
-  // Alunos
-  alunos: '/api/alunos',
-  alunoById: (id: string) => `/api/alunos/${id}`,
+  // Students
+  students: '/api/students',
+  studentById: (id: string) => `/api/students/${id}`,
   
-  // Instrutores
-  instrutores: '/api/instrutores',
-  instrutorById: (id: string) => `/api/instrutores/${id}`,
+  // Instructors
+  instructors: '/api/instructors',
+  instructorById: (id: string) => `/api/instructors/${id}`,
   
-  // Autoescolas
-  autoescolas: '/api/autoescolas',
-  autoescolaById: (id: string) => `/api/autoescolas/${id}`,
+  // Driving Schools
+  drivingSchools: '/api/driving-schools',
+  drivingSchoolById: (id: string) => `/api/driving-schools/${id}`,
   
   // Upload
   upload: '/api/upload',

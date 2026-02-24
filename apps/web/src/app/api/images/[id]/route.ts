@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import Imagem from '@/lib/models/Imagem';
+import { Image } from '@/lib/models';
 
 // GET /api/images/:id - Retorna imagem
 export async function GET(
@@ -11,19 +11,19 @@ export async function GET(
     await connectDB();
     
     const { id } = await params;
-    const imagem = await Imagem.findById(id);
+    const image = await Image.findById(id);
 
-    if (!imagem) {
-      return NextResponse.json({ error: 'Imagem não encontrada' }, { status: 404 });
+    if (!image) {
+      return NextResponse.json({ error: 'Image not found' }, { status: 404 });
     }
 
-    // Converte base64 para buffer
-    const buffer = Buffer.from(imagem.data, 'base64');
+    // Convert base64 to buffer
+    const buffer = Buffer.from(image.data, 'base64');
 
-    // Retorna a imagem com o content-type correto
+    // Return image with correct content-type
     return new NextResponse(buffer, {
       headers: {
-        'Content-Type': imagem.contentType,
+        'Content-Type': image.contentType,
         'Cache-Control': 'public, max-age=31536000', // Cache de 1 ano
       },
     });
@@ -42,13 +42,13 @@ export async function DELETE(
     await connectDB();
     
     const { id } = await params;
-    const imagem = await Imagem.findByIdAndDelete(id);
+    const image = await Image.findByIdAndDelete(id);
 
-    if (!imagem) {
-      return NextResponse.json({ error: 'Imagem não encontrada' }, { status: 404 });
+    if (!image) {
+      return NextResponse.json({ error: 'Image not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ message: 'Imagem removida' });
+    return NextResponse.json({ message: 'Image deleted' });
   } catch (error) {
     console.error('Erro ao remover imagem:', error);
     return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });

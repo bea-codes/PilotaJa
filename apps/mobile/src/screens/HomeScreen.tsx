@@ -9,7 +9,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { aulasService, Aula } from '../services/api';
+import { lessonsService, Lesson } from '../services/api';
 import { MOCK_USER } from '../config/user';
 
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
 };
 
 export default function HomeScreen({ navigation }: Props) {
-  const [aulas, setAulas] = useState<Aula[]>([]);
+  const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -43,18 +43,18 @@ export default function HomeScreen({ navigation }: Props) {
     loadAulas();
   };
 
-  // Calcula estatísticas
-  const upcomingAulas = aulas.filter(a => 
-    ['agendada', 'confirmada'].includes(a.status) && new Date(a.dataHora) >= new Date()
+  // Calculate stats
+  const upcomingLessons = lessons.filter(l => 
+    ['scheduled', 'confirmed'].includes(l.status) && new Date(l.dateTime) >= new Date()
   );
-  const completedAulas = aulas.filter(a => a.status === 'realizada');
-  const nextAula = upcomingAulas.length > 0 ? upcomingAulas[0] : null;
+  const completedLessons = lessons.filter(l => l.status === 'completed');
+  const nextLesson = upcomingLessons.length > 0 ? upcomingLessons[0] : null;
 
   const stats = {
-    completed: completedAulas.length,
-    remaining: Math.max(0, 20 - completedAulas.length), // Assumindo 20 aulas necessárias
+    completed: completedLessons.length,
+    remaining: Math.max(0, 20 - completedLessons.length), // Assuming 20 lessons needed
     total: 20,
-    upcoming: upcomingAulas.length,
+    upcoming: upcomingLessons.length,
   };
 
   const getInstrutorNome = (aula: Aula): string => {
@@ -66,14 +66,14 @@ export default function HomeScreen({ navigation }: Props) {
 
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
-    const hoje = new Date();
-    const amanha = new Date(hoje);
-    amanha.setDate(hoje.getDate() + 1);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
 
     let dayStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-    if (date.toDateString() === hoje.toDateString()) {
+    if (date.toDateString() === today.toDateString()) {
       dayStr = 'Hoje';
-    } else if (date.toDateString() === amanha.toDateString()) {
+    } else if (date.toDateString() === tomorrow.toDateString()) {
       dayStr = 'Amanhã';
     }
 
@@ -95,8 +95,7 @@ export default function HomeScreen({ navigation }: Props) {
             <Text style={styles.subGreeting}>
               {stats.upcoming > 0 
                 ? `Você tem ${stats.upcoming} aula${stats.upcoming > 1 ? 's' : ''} agendada${stats.upcoming > 1 ? 's' : ''}`
-                : 'Pronto para agendar uma aula?'
-              }
+                : 'Pronto para agendar uma aula?'}
             </Text>
           </View>
         </View>
@@ -106,16 +105,16 @@ export default function HomeScreen({ navigation }: Props) {
           <Text style={styles.cardTitle}>📅 Próxima Aula</Text>
           {loading ? (
             <ActivityIndicator color="#007AFF" style={{ marginVertical: 20 }} />
-          ) : nextAula ? (
+          ) : nextLesson ? (
             <>
               <View style={styles.lessonInfo}>
-                <Text style={styles.lessonDate}>{formatDateTime(nextAula.dataHora)}</Text>
+                <Text style={styles.lessonDate}>{formatDateTime(nextLesson.dateTime)}</Text>
                 <Text style={styles.lessonDetail}>
-                  {nextAula.tipo === 'pratica' ? '🚗 Aula Prática' : 
-                   nextAula.tipo === 'simulador' ? '🎮 Simulador' : '📚 Aula Teórica'}
+                  {nextLesson.type === 'practical' ? '🚗 Aula Prática' : 
+                   nextLesson.type === 'simulator' ? '🎮 Simulador' : '📚 Aula Teórica'}
                 </Text>
-                <Text style={styles.lessonDetail}>👨‍🏫 {getInstrutorNome(nextAula)}</Text>
-                <Text style={styles.lessonDetail}>⏱️ {nextAula.duracao} minutos</Text>
+                <Text style={styles.lessonDetail}>👨‍🏫 {getInstructorName(nextLesson)}</Text>
+                <Text style={styles.lessonDetail}>⏱️ {nextLesson.duration} minutos</Text>
               </View>
               <TouchableOpacity 
                 style={styles.cardButton}

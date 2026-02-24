@@ -24,107 +24,108 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
   const response = await fetch(`${API_URL}${endpoint}`, config);
   
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
     throw new Error(error.error || `HTTP ${response.status}`);
   }
 
   return response.json();
 }
 
-// ==================== AULAS ====================
+// ==================== LESSONS ====================
 
-export type Aula = {
+export type Lesson = {
   _id: string;
-  autoescolaId: string;
-  alunoId: string | { _id: string; nome: string; email?: string; telefone?: string };
-  instrutorId: string | { _id: string; nome: string; email?: string; telefone?: string };
-  dataHora: string;
-  duracao: number;
-  tipo: 'pratica' | 'simulador' | 'teorica';
-  status: 'agendada' | 'confirmada' | 'realizada' | 'cancelada' | 'falta';
-  observacoes?: string;
+  drivingSchoolId: string;
+  studentId: string | { _id: string; name: string; email?: string; phone?: string };
+  instructorId: string | { _id: string; name: string; email?: string; phone?: string };
+  dateTime: string;
+  duration: number;
+  type: 'practical' | 'simulator' | 'theoretical';
+  status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'noshow';
+  notes?: string;
 };
 
-export type CreateAulaData = {
-  autoescolaId: string;
-  alunoId: string;
-  instrutorId: string;
-  dataHora: string;
-  duracao?: number;
-  tipo: string;
-  observacoes?: string;
+export type CreateLessonData = {
+  drivingSchoolId: string;
+  studentId: string;
+  instructorId: string;
+  dateTime: string;
+  duration?: number;
+  type: string;
+  notes?: string;
 };
 
-export const aulasService = {
-  listar: (filtros?: Record<string, string>) => {
-    const params = filtros ? '?' + new URLSearchParams(filtros).toString() : '';
-    return request<Aula[]>(`${API_ENDPOINTS.aulas}${params}`);
+export const lessonsService = {
+  list: (filters?: Record<string, string>) => {
+    const params = filters ? '?' + new URLSearchParams(filters).toString() : '';
+    return request<Lesson[]>(`${API_ENDPOINTS.lessons}${params}`);
   },
   
-  buscarPorId: (id: string) => 
-    request<Aula>(API_ENDPOINTS.aulaById(id)),
+  getById: (id: string) => 
+    request<Lesson>(API_ENDPOINTS.lessonById(id)),
   
-  criar: (data: CreateAulaData) => 
-    request<Aula>(API_ENDPOINTS.aulas, { method: 'POST', body: data }),
+  create: (data: CreateLessonData) => 
+    request<Lesson>(API_ENDPOINTS.lessons, { method: 'POST', body: data }),
   
-  atualizar: (id: string, data: Partial<Aula>) => 
-    request<Aula>(API_ENDPOINTS.aulaById(id), { method: 'PATCH', body: data }),
+  update: (id: string, data: Partial<Lesson>) => 
+    request<Lesson>(API_ENDPOINTS.lessonById(id), { method: 'PATCH', body: data }),
   
-  cancelar: (id: string) => 
-    request<Aula>(API_ENDPOINTS.aulaById(id), { method: 'PATCH', body: { status: 'cancelada' } }),
+  cancel: (id: string) => 
+    request<Lesson>(API_ENDPOINTS.lessonById(id), { method: 'PATCH', body: { status: 'cancelled' } }),
 };
 
-// ==================== INSTRUTORES ====================
+// ==================== INSTRUCTORS ====================
 
-export type Instrutor = {
+export type Instructor = {
   _id: string;
-  nome: string;
+  name: string;
   email: string;
-  telefone: string;
-  autoescolaId: string;
+  phone: string;
+  drivingSchoolId: string;
+  categories?: string[];
 };
 
-export const instrutoresService = {
-  listar: (autoescolaId?: string) => {
-    const params = autoescolaId ? `?autoescolaId=${autoescolaId}` : '';
-    return request<Instrutor[]>(`${API_ENDPOINTS.instrutores}${params}`);
+export const instructorsService = {
+  list: (drivingSchoolId?: string) => {
+    const params = drivingSchoolId ? `?drivingSchoolId=${drivingSchoolId}` : '';
+    return request<Instructor[]>(`${API_ENDPOINTS.instructors}${params}`);
   },
   
-  buscarPorId: (id: string) => 
-    request<Instrutor>(API_ENDPOINTS.instrutorById(id)),
+  getById: (id: string) => 
+    request<Instructor>(API_ENDPOINTS.instructorById(id)),
 };
 
-// ==================== ALUNOS ====================
+// ==================== STUDENTS ====================
 
-export type Aluno = {
+export type Student = {
   _id: string;
-  nome: string;
+  name: string;
   email: string;
-  telefone: string;
-  autoescolaId?: string;
-  categoriaDesejada?: string;
+  phone: string;
+  drivingSchoolId?: string;
+  desiredCategory?: string;
   status?: string;
-  fotoUrl?: string;
+  photoUrl?: string;
 };
 
-export type UpdateAlunoData = {
-  nome?: string;
+export type UpdateStudentData = {
+  name?: string;
   email?: string;
-  telefone?: string;
-  fotoUrl?: string;
+  phone?: string;
+  photoUrl?: string;
 };
 
-export const alunosService = {
-  listar: (autoescolaId?: string) => {
-    const params = autoescolaId ? `?autoescolaId=${autoescolaId}` : '';
-    return request<Aluno[]>(`${API_ENDPOINTS.alunos}${params}`);
+export const studentsService = {
+  list: (drivingSchoolId?: string) => {
+    const params = drivingSchoolId ? `?drivingSchoolId=${drivingSchoolId}` : '';
+    return request<Student[]>(`${API_ENDPOINTS.students}${params}`);
   },
   
-  buscarPorId: (id: string) => 
-    request<Aluno>(API_ENDPOINTS.alunoById(id)),
+  getById: (id: string) => 
+    request<Student>(API_ENDPOINTS.studentById(id)),
     
-  atualizar: (id: string, data: UpdateAlunoData) =>
-    request<Aluno>(API_ENDPOINTS.alunoById(id), { method: 'PATCH', body: data }),
+  update: (id: string, data: UpdateStudentData) =>
+    request<Student>(API_ENDPOINTS.studentById(id), { method: 'PATCH', body: data }),
 };
 
 // ==================== UPLOAD ====================
@@ -136,7 +137,7 @@ export type UploadResponse = {
 
 export const uploadService = {
   uploadImage: async (uri: string): Promise<UploadResponse> => {
-    // Converte a imagem local para base64
+    // Convert local image to base64
     const response = await fetch(uri);
     const blob = await response.blob();
     

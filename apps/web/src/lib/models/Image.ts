@@ -1,13 +1,13 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface IImagem extends Document {
+export interface IImage extends Document {
   data: string; // Base64
   contentType: string;
   filename?: string;
   createdAt: Date;
 }
 
-const ImagemSchema = new Schema<IImagem>(
+const ImageSchema = new Schema<IImage>(
   {
     data: { type: String, required: true },
     contentType: { type: String, required: true },
@@ -16,4 +16,4 @@ const ImagemSchema = new Schema<IImagem>(
   { timestamps: true }
 );
 
-export default mongoose.models.Imagem || mongoose.model<IImagem>('Imagem', ImagemSchema);
+export default mongoose.models.Image || mongoose.model<IImage>('Image', ImageSchema);

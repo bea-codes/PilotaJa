@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import Imagem from '@/lib/models/Imagem';
+import { Image } from '@/lib/models';
 
 // POST /api/upload - Faz upload de imagem
 export async function POST(request: NextRequest) {
@@ -20,19 +20,19 @@ export async function POST(request: NextRequest) {
     // Remove prefixo data:image/...;base64, se existir
     const base64Data = data.replace(/^data:image\/\w+;base64,/, '');
 
-    const imagem = new Imagem({
+    const image = new Image({
       data: base64Data,
       contentType,
       filename,
     });
 
-    await imagem.save();
+    await image.save();
 
-    // Retorna URL para acessar a imagem
-    const imageUrl = `/api/images/${imagem._id}`;
+    // Return URL to access the image
+    const imageUrl = `/api/images/${image._id}`;
 
     return NextResponse.json({ 
-      id: imagem._id,
+      id: image._id,
       url: imageUrl,
     }, { status: 201 });
   } catch (error) {
