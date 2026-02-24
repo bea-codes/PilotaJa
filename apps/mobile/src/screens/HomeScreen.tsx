@@ -83,7 +83,7 @@ export default function HomeScreen({ navigation }: Props) {
       <View style={styles.actionsContainer}>
         <TouchableOpacity 
           style={styles.actionButton}
-          onPress={() => navigation.navigate('Schedule')}
+          onPress={() => navigation.navigate('schedule')}
         >
           <Text style={styles.actionIcon}>📆</Text>
           <Text style={styles.actionText}>Agendar Aula</Text>
@@ -91,7 +91,7 @@ export default function HomeScreen({ navigation }: Props) {
 
         <TouchableOpacity 
           style={styles.actionButton}
-          onPress={() => navigation.navigate('MyLessons')}
+          onPress={() => navigation.navigate('lessons')}
         >
           <Text style={styles.actionIcon}>📋</Text>
           <Text style={styles.actionText}>Minhas Aulas</Text>
