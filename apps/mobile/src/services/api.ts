@@ -36,8 +36,8 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
 export type Aula = {
   _id: string;
   autoescolaId: string;
-  alunoId: string;
-  instrutorId: string;
+  alunoId: string | { _id: string; nome: string; email?: string; telefone?: string };
+  instrutorId: string | { _id: string; nome: string; email?: string; telefone?: string };
   dataHora: string;
   duracao: number;
   tipo: 'pratica' | 'simulador' | 'teorica';

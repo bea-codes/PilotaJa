@@ -102,6 +102,13 @@ export default function MyLessonsScreen({ navigation }: Props) {
     }
   };
 
+  const getInstrutorNome = (aula: Aula): string => {
+    if (typeof aula.instrutorId === 'object' && aula.instrutorId?.nome) {
+      return aula.instrutorId.nome;
+    }
+    return 'Instrutor';
+  };
+
   const renderLesson = (aula: Aula) => {
     const badge = getStatusBadge(aula.status);
     const isUpcoming = ['agendada', 'confirmada'].includes(aula.status);
@@ -125,6 +132,7 @@ export default function MyLessonsScreen({ navigation }: Props) {
             {aula.tipo === 'pratica' ? '🚗 Aula Prática' : 
              aula.tipo === 'simulador' ? '🎮 Simulador' : '📚 Aula Teórica'}
           </Text>
+          <Text style={styles.instructorName}>👨‍🏫 {getInstrutorNome(aula)}</Text>
           <Text style={styles.lessonDuration}>{aula.duracao} minutos</Text>
         </View>
 
@@ -348,6 +356,11 @@ const styles = StyleSheet.create({
   lessonType: {
     fontSize: 16,
     color: '#1a1a1a',
+    marginBottom: 4,
+  },
+  instructorName: {
+    fontSize: 14,
+    color: '#666',
     marginBottom: 4,
   },
   lessonDuration: {

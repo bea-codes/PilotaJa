@@ -57,6 +57,13 @@ export default function HomeScreen({ navigation }: Props) {
     upcoming: upcomingAulas.length,
   };
 
+  const getInstrutorNome = (aula: Aula): string => {
+    if (typeof aula.instrutorId === 'object' && aula.instrutorId?.nome) {
+      return aula.instrutorId.nome;
+    }
+    return 'Instrutor';
+  };
+
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     const hoje = new Date();
@@ -107,6 +114,7 @@ export default function HomeScreen({ navigation }: Props) {
                   {nextAula.tipo === 'pratica' ? '🚗 Aula Prática' : 
                    nextAula.tipo === 'simulador' ? '🎮 Simulador' : '📚 Aula Teórica'}
                 </Text>
+                <Text style={styles.lessonDetail}>👨‍🏫 {getInstrutorNome(nextAula)}</Text>
                 <Text style={styles.lessonDetail}>⏱️ {nextAula.duracao} minutos</Text>
               </View>
               <TouchableOpacity 
