@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
           _id: autoescola._id,
           nome: autoescola.nome,
         },
-        instrutores: instrutores.map(i => ({ _id: i._id, nome: i.nome })),
+        instrutores: instrutores.map((i: any) => ({ _id: i._id, nome: i.nome })),
         aluno: {
           _id: aluno._id,
           nome: aluno.nome,
