@@ -194,7 +194,6 @@ const styles = StyleSheet.create({
   },
   lessonDateTime: {
     flexDirection: 'row',
-    gap: 16,
   },
   lessonDate: {
     fontSize: 14,
@@ -204,6 +203,7 @@ const styles = StyleSheet.create({
   lessonTime: {
     fontSize: 14,
     color: '#666',
+    marginLeft: 16,
   },
   statusBadge: {
     paddingHorizontal: 12,
@@ -228,7 +228,6 @@ const styles = StyleSheet.create({
   },
   lessonActions: {
     flexDirection: 'row',
-    gap: 12,
     borderTopWidth: 1,
     borderTopColor: '#f0f0f0',
     paddingTop: 12,
@@ -239,6 +238,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     alignItems: 'center',
+    marginHorizontal: 4,
   },
   actionButtonText: {
     color: '#007AFF',

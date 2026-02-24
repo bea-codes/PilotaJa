@@ -154,7 +154,6 @@ const styles = StyleSheet.create({
   },
   datesRow: {
     flexDirection: 'row',
-    gap: 12,
   },
   dateCard: {
     width: 64,
@@ -187,7 +186,6 @@ const styles = StyleSheet.create({
   timesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
   },
   timeCard: {
     width: '30%',
