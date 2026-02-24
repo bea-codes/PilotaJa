@@ -126,3 +126,41 @@ export const alunosService = {
   atualizar: (id: string, data: UpdateAlunoData) =>
     request<Aluno>(API_ENDPOINTS.alunoById(id), { method: 'PATCH', body: data }),
 };
+
+// ==================== UPLOAD ====================
+
+export type UploadResponse = {
+  id: string;
+  url: string;
+};
+
+export const uploadService = {
+  uploadImage: async (uri: string): Promise<UploadResponse> => {
+    // Converte a imagem local para base64
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        try {
+          const base64 = reader.result as string;
+          const result = await request<UploadResponse>(API_ENDPOINTS.upload, {
+            method: 'POST',
+            body: {
+              data: base64,
+              contentType: blob.type || 'image/jpeg',
+            },
+          });
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  },
+  
+  getImageUrl: (id: string) => `${API_URL}${API_ENDPOINTS.imageById(id)}`,
+};

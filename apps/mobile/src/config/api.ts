@@ -30,4 +30,8 @@ export const API_ENDPOINTS = {
   // Autoescolas
   autoescolas: '/api/autoescolas',
   autoescolaById: (id: string) => `/api/autoescolas/${id}`,
+  
+  // Upload
+  upload: '/api/upload',
+  imageById: (id: string) => `/api/images/${id}`,
 };

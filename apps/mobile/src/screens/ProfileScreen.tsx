@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
-import { alunosService, Aluno } from '../services/api';
+import { alunosService, uploadService, Aluno } from '../services/api';
 import { MOCK_USER } from '../config/user';
 
 type Props = {
@@ -158,14 +158,23 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
       if (nome !== originalData.nome) updateData.nome = nome;
       if (email !== originalData.email) updateData.email = email;
       if (telefone !== originalData.telefone) updateData.telefone = telefone;
-      if (foto !== originalData.foto) updateData.fotoUrl = foto;
+      
+      // Se a foto mudou e é uma URI local, faz upload
+      if (foto !== originalData.foto && foto && foto.startsWith('file://')) {
+        const uploadResult = await uploadService.uploadImage(foto);
+        updateData.fotoUrl = uploadService.getImageUrl(uploadResult.id);
+      } else if (foto !== originalData.foto) {
+        updateData.fotoUrl = foto;
+      }
       
       // Chama API de atualização
       const updatedAluno = await alunosService.atualizar(MOCK_USER.alunoId, updateData);
       
-      // Atualiza estado local
+      // Atualiza estado local com a URL da foto do servidor
+      const newFotoUrl = updatedAluno.fotoUrl || foto;
       setAluno(updatedAluno);
-      setOriginalData({ nome, email, telefone, foto });
+      setFoto(newFotoUrl);
+      setOriginalData({ nome, email, telefone, foto: newFotoUrl });
       Alert.alert('Sucesso', 'Perfil atualizado!');
     } catch (error: any) {
       Alert.alert('Erro', error.message || 'Não foi possível salvar');
