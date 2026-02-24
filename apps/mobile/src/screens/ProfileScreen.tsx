@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
-import { alunosService, uploadService, Aluno } from '../services/api';
+import { studentsService, uploadService, Student } from '../services/api';
 import { MOCK_USER } from '../config/user';
 
 type Props = {
@@ -23,7 +23,7 @@ type Props = {
 };
 
 export default function ProfileScreen({ navigation, onLogout }: Props) {
-  const [aluno, setAluno] = useState<Aluno | null>(null);
+  const [student, setStudent] = useState<Student | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   
@@ -50,22 +50,27 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
 
   const loadProfile = async () => {
     try {
-      const data = await alunosService.buscarPorId(MOCK_USER.alunoId);
-      setAluno(data);
-      setNome(data.nome || '');
+      if (!MOCK_USER.studentId) {
+        setNome(MOCK_USER.name);
+        setOriginalData({ nome: MOCK_USER.name, email: '', telefone: '', foto: null });
+        return;
+      }
+      const data = await studentsService.getById(MOCK_USER.studentId);
+      setStudent(data);
+      setNome(data.name || '');
       setEmail(data.email || '');
-      setTelefone(data.telefone || '');
-      setFoto(data.fotoUrl || null);
+      setTelefone(data.phone || '');
+      setFoto(data.photoUrl || null);
       setOriginalData({ 
-        nome: data.nome || '', 
+        nome: data.name || '', 
         email: data.email || '', 
-        telefone: data.telefone || '',
-        foto: data.fotoUrl || null 
+        telefone: data.phone || '',
+        foto: data.photoUrl || null 
       });
     } catch (error) {
-      console.error('Erro ao carregar perfil:', error);
-      setNome(MOCK_USER.nome);
-      setOriginalData({ nome: MOCK_USER.nome, email: '', telefone: '', foto: null });
+      console.error('Error loading profile:', error);
+      setNome(MOCK_USER.name);
+      setOriginalData({ nome: MOCK_USER.name, email: '', telefone: '', foto: null });
     } finally {
       setLoading(false);
     }
@@ -153,26 +158,26 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
 
     setSaving(true);
     try {
-      // Prepara dados para atualização
+      // Prepare data for update
       const updateData: any = {};
-      if (nome !== originalData.nome) updateData.nome = nome;
+      if (nome !== originalData.nome) updateData.name = nome;
       if (email !== originalData.email) updateData.email = email;
-      if (telefone !== originalData.telefone) updateData.telefone = telefone;
+      if (telefone !== originalData.telefone) updateData.phone = telefone;
       
-      // Se a foto mudou e é uma URI local, faz upload
+      // If photo changed and is a local URI, upload it
       if (foto !== originalData.foto && foto && foto.startsWith('file://')) {
         const uploadResult = await uploadService.uploadImage(foto);
-        updateData.fotoUrl = uploadService.getImageUrl(uploadResult.id);
+        updateData.photoUrl = uploadService.getImageUrl(uploadResult.id);
       } else if (foto !== originalData.foto) {
-        updateData.fotoUrl = foto;
+        updateData.photoUrl = foto;
       }
       
-      // Chama API de atualização
-      const updatedAluno = await alunosService.atualizar(MOCK_USER.alunoId, updateData);
+      // Call update API
+      const updatedStudent = await studentsService.update(MOCK_USER.studentId, updateData);
       
-      // Atualiza estado local com a URL da foto do servidor
-      const newFotoUrl = updatedAluno.fotoUrl || foto;
-      setAluno(updatedAluno);
+      // Update local state with server photo URL
+      const newFotoUrl = updatedStudent.photoUrl || foto;
+      setStudent(updatedStudent);
       setFoto(newFotoUrl);
       setOriginalData({ nome, email, telefone, foto: newFotoUrl });
       Alert.alert('Sucesso', 'Perfil atualizado!');
@@ -341,12 +346,12 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
 
               <View style={styles.divider} />
 
-              {/* Categoria (não editável) */}
+              {/* Category (not editable) */}
               <View style={styles.infoRow}>
                 <Text style={styles.infoIcon}>🚗</Text>
                 <View style={styles.infoContent}>
                   <Text style={styles.infoLabel}>Categoria</Text>
-                  <Text style={styles.infoValue}>{aluno?.categoriaDesejada || 'B'}</Text>
+                  <Text style={styles.infoValue}>{student?.desiredCategory || 'B'}</Text>
                 </View>
               </View>
             </View>

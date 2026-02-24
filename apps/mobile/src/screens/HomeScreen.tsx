@@ -22,16 +22,20 @@ export default function HomeScreen({ navigation }: Props) {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    loadAulas();
+    loadLessons();
   }, []);
 
-  const loadAulas = async () => {
+  const loadLessons = async () => {
     try {
-      const data = await aulasService.listar({ alunoId: MOCK_USER.alunoId });
-      setAulas(data);
+      if (!MOCK_USER.studentId) {
+        setLessons([]);
+        return;
+      }
+      const data = await lessonsService.list({ studentId: MOCK_USER.studentId });
+      setLessons(data);
     } catch (error) {
-      console.error('Erro ao carregar aulas:', error);
-      setAulas([]);
+      console.error('Error loading lessons:', error);
+      setLessons([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -40,7 +44,14 @@ export default function HomeScreen({ navigation }: Props) {
 
   const onRefresh = () => {
     setRefreshing(true);
-    loadAulas();
+    loadLessons();
+  };
+
+  const getInstructorName = (lesson: Lesson): string => {
+    if (typeof lesson.instructorId === 'object' && lesson.instructorId?.name) {
+      return lesson.instructorId.name;
+    }
+    return 'Instrutor';
   };
 
   // Calculate stats
@@ -52,16 +63,9 @@ export default function HomeScreen({ navigation }: Props) {
 
   const stats = {
     completed: completedLessons.length,
-    remaining: Math.max(0, 20 - completedLessons.length), // Assuming 20 lessons needed
+    remaining: Math.max(0, 20 - completedLessons.length),
     total: 20,
     upcoming: upcomingLessons.length,
-  };
-
-  const getInstrutorNome = (aula: Aula): string => {
-    if (typeof aula.instrutorId === 'object' && aula.instrutorId?.nome) {
-      return aula.instrutorId.nome;
-    }
-    return 'Instrutor';
   };
 
   const formatDateTime = (dateString: string) => {
@@ -91,7 +95,7 @@ export default function HomeScreen({ navigation }: Props) {
       >
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Olá, {MOCK_USER.nome}! 👋</Text>
+            <Text style={styles.greeting}>Olá, {MOCK_USER.name}! 👋</Text>
             <Text style={styles.subGreeting}>
               {stats.upcoming > 0 
                 ? `Você tem ${stats.upcoming} aula${stats.upcoming > 1 ? 's' : ''} agendada${stats.upcoming > 1 ? 's' : ''}`
@@ -100,7 +104,7 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         </View>
 
-        {/* Próxima Aula */}
+        {/* Next Lesson */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>📅 Próxima Aula</Text>
           {loading ? (
@@ -136,7 +140,7 @@ export default function HomeScreen({ navigation }: Props) {
           )}
         </View>
 
-        {/* Progresso */}
+        {/* Progress */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>📊 Seu Progresso</Text>
           <View style={styles.progressContainer}>
@@ -168,9 +172,8 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         </View>
 
-        {/* Ações Rápidas */}
+        {/* Quick Actions */}
         <View style={styles.actionsContainer}>
-          {/* Primeira linha - ações principais */}
           <View style={styles.actionsRow}>
             <TouchableOpacity 
               style={styles.actionButton}
@@ -189,7 +192,6 @@ export default function HomeScreen({ navigation }: Props) {
             </TouchableOpacity>
           </View>
 
-          {/* Segunda linha - ações secundárias */}
           <View style={styles.actionsRow}>
             <TouchableOpacity style={styles.actionButton}>
               <Text style={styles.actionIcon}>💬</Text>
@@ -211,140 +213,30 @@ export default function HomeScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#007AFF',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    backgroundColor: '#007AFF',
-    padding: 24,
-    paddingBottom: 32,
-  },
-  greeting: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  subGreeting: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 4,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    margin: 16,
-    marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1a1a1a',
-    marginBottom: 16,
-  },
-  lessonInfo: {
-    marginBottom: 16,
-  },
-  lessonDate: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#007AFF',
-    marginBottom: 8,
-  },
-  lessonDetail: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
-  },
-  noLessonText: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    marginVertical: 16,
-  },
-  cardButton: {
-    backgroundColor: '#f0f7ff',
-    borderRadius: 8,
-    padding: 12,
-    alignItems: 'center',
-  },
-  cardButtonText: {
-    color: '#007AFF',
-    fontWeight: '600',
-  },
-  progressContainer: {
-    marginBottom: 16,
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 4,
-    marginBottom: 8,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#4CAF50',
-    borderRadius: 4,
-  },
-  progressText: {
-    fontSize: 14,
-    color: '#666',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 4,
-  },
-  actionsContainer: {
-    padding: 8,
-    marginBottom: 24,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  actionButton: {
-    width: '48%',
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  actionIcon: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  actionText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1a1a1a',
-  },
+  safeArea: { flex: 1, backgroundColor: '#007AFF' },
+  container: { flex: 1, backgroundColor: '#f5f5f5' },
+  header: { backgroundColor: '#007AFF', padding: 24, paddingBottom: 32 },
+  greeting: { fontSize: 24, fontWeight: 'bold', color: '#fff' },
+  subGreeting: { fontSize: 16, color: 'rgba(255,255,255,0.8)', marginTop: 4 },
+  card: { backgroundColor: '#fff', borderRadius: 16, padding: 20, margin: 16, marginBottom: 8, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
+  cardTitle: { fontSize: 18, fontWeight: '600', color: '#1a1a1a', marginBottom: 16 },
+  lessonInfo: { marginBottom: 16 },
+  lessonDate: { fontSize: 20, fontWeight: 'bold', color: '#007AFF', marginBottom: 8 },
+  lessonDetail: { fontSize: 14, color: '#666', marginBottom: 4 },
+  noLessonText: { fontSize: 16, color: '#666', textAlign: 'center', marginVertical: 16 },
+  cardButton: { backgroundColor: '#f0f7ff', borderRadius: 8, padding: 12, alignItems: 'center' },
+  cardButtonText: { color: '#007AFF', fontWeight: '600' },
+  progressContainer: { marginBottom: 16 },
+  progressBar: { height: 8, backgroundColor: '#e0e0e0', borderRadius: 4, marginBottom: 8 },
+  progressFill: { height: '100%', backgroundColor: '#4CAF50', borderRadius: 4 },
+  progressText: { fontSize: 14, color: '#666' },
+  statsRow: { flexDirection: 'row', justifyContent: 'space-around' },
+  statItem: { alignItems: 'center' },
+  statNumber: { fontSize: 24, fontWeight: 'bold', color: '#1a1a1a' },
+  statLabel: { fontSize: 12, color: '#666', marginTop: 4 },
+  actionsContainer: { padding: 8, marginBottom: 24 },
+  actionsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
+  actionButton: { width: '48%', backgroundColor: '#fff', borderRadius: 16, padding: 20, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 3 },
+  actionIcon: { fontSize: 32, marginBottom: 8 },
+  actionText: { fontSize: 14, fontWeight: '600', color: '#1a1a1a' },
 });
