@@ -165,10 +165,10 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
       if (telefone !== originalData.telefone) updateData.phone = telefone;
       
       // If photo changed and is a local URI, upload it
-      if (foto !== originalData.foto && foto && foto.startsWith('file://')) {
+      if (foto !== originalData.foto && foto && !foto.startsWith('http')) {
         const uploadResult = await uploadService.uploadImage(foto);
         updateData.photoUrl = uploadService.getImageUrl(uploadResult.id);
-      } else if (foto !== originalData.foto) {
+      } else if (foto !== originalData.foto && foto) {
         updateData.photoUrl = foto;
       }
       
