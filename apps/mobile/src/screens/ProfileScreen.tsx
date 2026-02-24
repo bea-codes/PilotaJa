@@ -5,9 +5,11 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
+  TextInput,
   Alert,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { alunosService, Aluno } from '../services/api';
@@ -21,6 +23,13 @@ type Props = {
 export default function ProfileScreen({ navigation, onLogout }: Props) {
   const [aluno, setAluno] = useState<Aluno | null>(null);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  
+  // Campos editáveis
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [telefone, setTelefone] = useState('');
 
   useEffect(() => {
     loadProfile();
@@ -30,11 +39,46 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
     try {
       const data = await alunosService.buscarPorId(MOCK_USER.alunoId);
       setAluno(data);
+      setNome(data.nome || '');
+      setEmail(data.email || '');
+      setTelefone(data.telefone || '');
     } catch (error) {
       console.error('Erro ao carregar perfil:', error);
+      // Usa dados do mock se falhar
+      setNome(MOCK_USER.nome);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSave = async () => {
+    if (!nome.trim()) {
+      Alert.alert('Atenção', 'O nome é obrigatório');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      // TODO: Implementar API de atualização
+      // await alunosService.atualizar(MOCK_USER.alunoId, { nome, email, telefone });
+      
+      // Por enquanto, só atualiza local
+      setAluno(prev => prev ? { ...prev, nome, email, telefone } : null);
+      setEditing(false);
+      Alert.alert('Sucesso', 'Perfil atualizado!');
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Não foi possível salvar');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    // Restaura valores originais
+    setNome(aluno?.nome || MOCK_USER.nome);
+    setEmail(aluno?.email || '');
+    setTelefone(aluno?.telefone || '');
+    setEditing(false);
   };
 
   const handleLogout = () => {
@@ -52,8 +96,8 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
     );
   };
 
-  const getInitials = (nome: string) => {
-    return nome
+  const getInitials = (name: string) => {
+    return name
       .split(' ')
       .map(n => n[0])
       .slice(0, 2)
@@ -79,107 +123,197 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
           <Text style={styles.backText}>← Voltar</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Meu Perfil</Text>
-        <View style={styles.headerSpacer} />
+        {!editing ? (
+          <TouchableOpacity onPress={() => setEditing(true)} style={styles.editButton}>
+            <Text style={styles.editText}>Editar</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.headerSpacer} />
+        )}
       </View>
 
-      <ScrollView style={styles.container}>
-        {/* Avatar e Nome */}
-        <View style={styles.profileHeader}>
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
-                {getInitials(aluno?.nome || MOCK_USER.nome)}
-              </Text>
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView style={styles.container}>
+          {/* Avatar e Nome */}
+          <View style={styles.profileHeader}>
+            <View style={styles.avatarContainer}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>
+                  {getInitials(nome || MOCK_USER.nome)}
+                </Text>
+              </View>
+              <TouchableOpacity style={styles.editAvatarButton}>
+                <Text style={styles.editAvatarText}>📷</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity style={styles.editAvatarButton}>
-              <Text style={styles.editAvatarText}>📷</Text>
-            </TouchableOpacity>
+            {!editing ? (
+              <>
+                <Text style={styles.userName}>{nome}</Text>
+                <Text style={styles.userStatus}>Aluno ativo</Text>
+              </>
+            ) : (
+              <Text style={styles.editingLabel}>Editando perfil</Text>
+            )}
           </View>
-          <Text style={styles.userName}>{aluno?.nome || MOCK_USER.nome}</Text>
-          <Text style={styles.userStatus}>Aluno ativo</Text>
-        </View>
 
-        {/* Informações */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Informações Pessoais</Text>
+          {/* Informações */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Informações Pessoais</Text>
+            
+            <View style={styles.infoCard}>
+              {/* Nome */}
+              <View style={styles.infoRow}>
+                <Text style={styles.infoIcon}>👤</Text>
+                <View style={styles.infoContent}>
+                  <Text style={styles.infoLabel}>Nome</Text>
+                  {editing ? (
+                    <TextInput
+                      style={styles.input}
+                      value={nome}
+                      onChangeText={setNome}
+                      placeholder="Seu nome"
+                      autoCapitalize="words"
+                    />
+                  ) : (
+                    <Text style={styles.infoValue}>{nome || 'Não informado'}</Text>
+                  )}
+                </View>
+              </View>
+
+              <View style={styles.divider} />
+
+              {/* Email */}
+              <View style={styles.infoRow}>
+                <Text style={styles.infoIcon}>📧</Text>
+                <View style={styles.infoContent}>
+                  <Text style={styles.infoLabel}>E-mail</Text>
+                  {editing ? (
+                    <TextInput
+                      style={styles.input}
+                      value={email}
+                      onChangeText={setEmail}
+                      placeholder="seu@email.com"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                    />
+                  ) : (
+                    <Text style={styles.infoValue}>{email || 'Não informado'}</Text>
+                  )}
+                </View>
+              </View>
+
+              <View style={styles.divider} />
+
+              {/* Telefone */}
+              <View style={styles.infoRow}>
+                <Text style={styles.infoIcon}>📱</Text>
+                <View style={styles.infoContent}>
+                  <Text style={styles.infoLabel}>Telefone</Text>
+                  {editing ? (
+                    <TextInput
+                      style={styles.input}
+                      value={telefone}
+                      onChangeText={setTelefone}
+                      placeholder="(11) 99999-9999"
+                      keyboardType="phone-pad"
+                    />
+                  ) : (
+                    <Text style={styles.infoValue}>{telefone || 'Não informado'}</Text>
+                  )}
+                </View>
+              </View>
+
+              <View style={styles.divider} />
+
+              {/* Categoria (não editável) */}
+              <View style={styles.infoRow}>
+                <Text style={styles.infoIcon}>🚗</Text>
+                <View style={styles.infoContent}>
+                  <Text style={styles.infoLabel}>Categoria</Text>
+                  <Text style={styles.infoValue}>{aluno?.categoriaDesejada || 'B'}</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Botões de Salvar/Cancelar quando editando */}
+          {editing && (
+            <View style={styles.editActions}>
+              <TouchableOpacity 
+                style={styles.cancelButton} 
+                onPress={handleCancel}
+                disabled={saving}
+              >
+                <Text style={styles.cancelButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.saveButton, saving && styles.saveButtonDisabled]} 
+                onPress={handleSave}
+                disabled={saving}
+              >
+                {saving ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text style={styles.saveButtonText}>Salvar</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Opções (só mostra quando não está editando) */}
+          {!editing && (
+            <>
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Configurações</Text>
+                
+                <View style={styles.optionsCard}>
+                  <TouchableOpacity style={styles.optionRow}>
+                    <Text style={styles.optionIcon}>🔔</Text>
+                    <Text style={styles.optionText}>Notificações</Text>
+                    <Text style={styles.optionArrow}>›</Text>
+                  </TouchableOpacity>
+
+                  <View style={styles.divider} />
+
+                  <TouchableOpacity style={styles.optionRow}>
+                    <Text style={styles.optionIcon}>🔒</Text>
+                    <Text style={styles.optionText}>Alterar Senha</Text>
+                    <Text style={styles.optionArrow}>›</Text>
+                  </TouchableOpacity>
+
+                  <View style={styles.divider} />
+
+                  <TouchableOpacity style={styles.optionRow}>
+                    <Text style={styles.optionIcon}>📄</Text>
+                    <Text style={styles.optionText}>Termos de Uso</Text>
+                    <Text style={styles.optionArrow}>›</Text>
+                  </TouchableOpacity>
+
+                  <View style={styles.divider} />
+
+                  <TouchableOpacity style={styles.optionRow}>
+                    <Text style={styles.optionIcon}>❓</Text>
+                    <Text style={styles.optionText}>Ajuda</Text>
+                    <Text style={styles.optionArrow}>›</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Botão Sair */}
+              <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                <Text style={styles.logoutText}>🚪 Sair da Conta</Text>
+              </TouchableOpacity>
+
+              <Text style={styles.version}>PilotaJá v1.0.0</Text>
+            </>
+          )}
           
-          <View style={styles.infoCard}>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoIcon}>📧</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>E-mail</Text>
-                <Text style={styles.infoValue}>{aluno?.email || 'Não informado'}</Text>
-              </View>
-            </View>
-
-            <View style={styles.divider} />
-
-            <View style={styles.infoRow}>
-              <Text style={styles.infoIcon}>📱</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Telefone</Text>
-                <Text style={styles.infoValue}>{aluno?.telefone || 'Não informado'}</Text>
-              </View>
-            </View>
-
-            <View style={styles.divider} />
-
-            <View style={styles.infoRow}>
-              <Text style={styles.infoIcon}>🚗</Text>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Categoria</Text>
-                <Text style={styles.infoValue}>{aluno?.categoriaDesejada || 'B'}</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Opções */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Configurações</Text>
-          
-          <View style={styles.optionsCard}>
-            <TouchableOpacity style={styles.optionRow}>
-              <Text style={styles.optionIcon}>🔔</Text>
-              <Text style={styles.optionText}>Notificações</Text>
-              <Text style={styles.optionArrow}>›</Text>
-            </TouchableOpacity>
-
-            <View style={styles.divider} />
-
-            <TouchableOpacity style={styles.optionRow}>
-              <Text style={styles.optionIcon}>🔒</Text>
-              <Text style={styles.optionText}>Alterar Senha</Text>
-              <Text style={styles.optionArrow}>›</Text>
-            </TouchableOpacity>
-
-            <View style={styles.divider} />
-
-            <TouchableOpacity style={styles.optionRow}>
-              <Text style={styles.optionIcon}>📄</Text>
-              <Text style={styles.optionText}>Termos de Uso</Text>
-              <Text style={styles.optionArrow}>›</Text>
-            </TouchableOpacity>
-
-            <View style={styles.divider} />
-
-            <TouchableOpacity style={styles.optionRow}>
-              <Text style={styles.optionIcon}>❓</Text>
-              <Text style={styles.optionText}>Ajuda</Text>
-              <Text style={styles.optionArrow}>›</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Botão Sair */}
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>🚪 Sair da Conta</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.version}>PilotaJá v1.0.0</Text>
-        
-        <View style={styles.bottomPadding} />
-      </ScrollView>
+          <View style={styles.bottomPadding} />
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -218,6 +352,14 @@ const styles = StyleSheet.create({
   },
   headerSpacer: {
     width: 60,
+  },
+  editButton: {
+    padding: 4,
+  },
+  editText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '500',
   },
   container: {
     flex: 1,
@@ -274,6 +416,11 @@ const styles = StyleSheet.create({
     color: '#4CAF50',
     marginTop: 4,
   },
+  editingLabel: {
+    fontSize: 14,
+    color: '#007AFF',
+    fontWeight: '500',
+  },
   section: {
     padding: 16,
   },
@@ -310,10 +457,54 @@ const styles = StyleSheet.create({
     color: '#1a1a1a',
     marginTop: 2,
   },
+  input: {
+    fontSize: 16,
+    color: '#1a1a1a',
+    marginTop: 2,
+    padding: 8,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
   divider: {
     height: 1,
     backgroundColor: '#f0f0f0',
     marginLeft: 48,
+  },
+  editActions: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  cancelButton: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    marginRight: 8,
+  },
+  cancelButtonText: {
+    color: '#666',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  saveButton: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    backgroundColor: '#007AFF',
+    marginLeft: 8,
+  },
+  saveButtonDisabled: {
+    backgroundColor: '#99c9ff',
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   optionsCard: {
     backgroundColor: '#fff',
