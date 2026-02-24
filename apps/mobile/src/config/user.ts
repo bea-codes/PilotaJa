@@ -2,7 +2,7 @@
 // TODO: Substituir por contexto de autenticação real
 
 export const MOCK_USER = {
-  alunoId: '000000000000000000000001', // Substituir pelo ID real após criar aluno
-  autoescolaId: '000000000000000000000001', // Substituir pelo ID real
+  alunoId: '699ddc3068ca3dec6aceb313',
+  autoescolaId: '699ddc3068ca3dec6aceb30b',
   nome: 'Cassio',
 };
