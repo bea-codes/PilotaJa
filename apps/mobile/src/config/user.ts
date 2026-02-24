@@ -2,7 +2,7 @@
 // TODO: Replace with real authentication context
 
 export const MOCK_USER = {
-  studentId: '', // Will be set after seed
-  drivingSchoolId: '', // Will be set after seed
+  studentId: '699dec36cae82ace292899e3',
+  drivingSchoolId: '699dec36cae82ace292899db',
   name: 'Cassio',
 };
