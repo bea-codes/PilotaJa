@@ -82,13 +82,16 @@ export default function ScheduleScreen({ navigation }: Props) {
     setSubmitting(true);
     
     try {
-      const dataHora = `${selectedDate}T${selectedTime}:00.000Z`;
+      // Cria a data no timezone local (não UTC)
+      const [year, month, day] = selectedDate.split('-').map(Number);
+      const [hour, minute] = selectedTime.split(':').map(Number);
+      const dataHoraLocal = new Date(year, month - 1, day, hour, minute, 0);
       
       await aulasService.criar({
         autoescolaId: MOCK_USER.autoescolaId,
         alunoId: MOCK_USER.alunoId,
         instrutorId: selectedInstructor,
-        dataHora,
+        dataHora: dataHoraLocal.toISOString(),
         duracao: 50,
         tipo: 'pratica',
       });
