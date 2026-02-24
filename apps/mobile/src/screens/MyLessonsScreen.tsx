@@ -1,62 +1,117 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { aulasService, Aula } from '../services/api';
+import { MOCK_USER } from '../config/user';
 
 type Props = {
   navigation: any;
 };
 
-type Lesson = {
-  id: string;
-  date: string;
-  time: string;
-  instructor: string;
-  status: 'upcoming' | 'completed' | 'cancelled';
-  rating?: number;
-};
-
 export default function MyLessonsScreen({ navigation }: Props) {
   const [activeTab, setActiveTab] = useState<'upcoming' | 'history'>('upcoming');
+  const [aulas, setAulas] = useState<Aula[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Mock data
-  const lessons: Lesson[] = [
-    { id: '1', date: '24/02', time: '15:00', instructor: 'Carlos Silva', status: 'upcoming' },
-    { id: '2', date: '26/02', time: '10:00', instructor: 'Maria Santos', status: 'upcoming' },
-    { id: '3', date: '28/02', time: '14:00', instructor: 'Carlos Silva', status: 'upcoming' },
-    { id: '4', date: '20/02', time: '09:00', instructor: 'João Oliveira', status: 'completed', rating: 5 },
-    { id: '5', date: '18/02', time: '15:00', instructor: 'Carlos Silva', status: 'completed', rating: 4 },
-    { id: '6', date: '15/02', time: '10:00', instructor: 'Maria Santos', status: 'completed', rating: 5 },
-    { id: '7', date: '12/02', time: '14:00', instructor: 'Carlos Silva', status: 'cancelled' },
-  ];
+  useEffect(() => {
+    loadAulas();
+  }, []);
 
-  const upcomingLessons = lessons.filter(l => l.status === 'upcoming');
-  const historyLessons = lessons.filter(l => l.status !== 'upcoming');
-
-  const getStatusBadge = (status: Lesson['status']) => {
-    switch (status) {
-      case 'upcoming':
-        return { text: 'Agendada', color: '#007AFF', bg: '#e6f2ff' };
-      case 'completed':
-        return { text: 'Concluída', color: '#4CAF50', bg: '#e8f5e9' };
-      case 'cancelled':
-        return { text: 'Cancelada', color: '#f44336', bg: '#ffebee' };
+  const loadAulas = async () => {
+    try {
+      const data = await aulasService.listar({ alunoId: MOCK_USER.alunoId });
+      setAulas(data);
+    } catch (error) {
+      console.error('Erro ao carregar aulas:', error);
+      setAulas([]);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
   };
 
-  const renderLesson = (lesson: Lesson) => {
-    const badge = getStatusBadge(lesson.status);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    loadAulas();
+  }, []);
+
+  const handleCancelar = async (aulaId: string) => {
+    Alert.alert(
+      'Cancelar Aula',
+      'Tem certeza que deseja cancelar esta aula?',
+      [
+        { text: 'Não', style: 'cancel' },
+        {
+          text: 'Sim, cancelar',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await aulasService.cancelar(aulaId);
+              loadAulas(); // Recarrega a lista
+              Alert.alert('Sucesso', 'Aula cancelada');
+            } catch (error: any) {
+              Alert.alert('Erro', error.message || 'Não foi possível cancelar');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const upcomingLessons = aulas.filter(a => 
+    ['agendada', 'confirmada'].includes(a.status) && new Date(a.dataHora) >= new Date()
+  );
+  const historyLessons = aulas.filter(a => 
+    !['agendada', 'confirmada'].includes(a.status) || new Date(a.dataHora) < new Date()
+  );
+
+  const getStatusBadge = (status: Aula['status']) => {
+    switch (status) {
+      case 'agendada':
+        return { text: 'Agendada', color: '#007AFF', bg: '#e6f2ff' };
+      case 'confirmada':
+        return { text: 'Confirmada', color: '#4CAF50', bg: '#e8f5e9' };
+      case 'realizada':
+        return { text: 'Realizada', color: '#4CAF50', bg: '#e8f5e9' };
+      case 'cancelada':
+        return { text: 'Cancelada', color: '#f44336', bg: '#ffebee' };
+      case 'falta':
+        return { text: 'Falta', color: '#ff9800', bg: '#fff3e0' };
+      default:
+        return { text: status, color: '#666', bg: '#f5f5f5' };
+    }
+  };
+
+  const renderLesson = (aula: Aula) => {
+    const badge = getStatusBadge(aula.status);
+    const isUpcoming = ['agendada', 'confirmada'].includes(aula.status);
+    
     return (
-      <View key={lesson.id} style={styles.lessonCard}>
+      <View key={aula._id} style={styles.lessonCard}>
         <View style={styles.lessonHeader}>
           <View style={styles.lessonDateTime}>
-            <Text style={styles.lessonDate}>📅 {lesson.date}</Text>
-            <Text style={styles.lessonTime}>🕐 {lesson.time}</Text>
+            <Text style={styles.lessonDate}>📅 {formatDate(aula.dataHora)}</Text>
+            <Text style={styles.lessonTime}>🕐 {formatTime(aula.dataHora)}</Text>
           </View>
           <View style={[styles.statusBadge, { backgroundColor: badge.bg }]}>
             <Text style={[styles.statusText, { color: badge.color }]}>
@@ -66,20 +121,25 @@ export default function MyLessonsScreen({ navigation }: Props) {
         </View>
         
         <View style={styles.lessonBody}>
-          <Text style={styles.instructorName}>👨‍🏫 {lesson.instructor}</Text>
-          {lesson.rating && (
-            <Text style={styles.rating}>
-              {'⭐'.repeat(lesson.rating)}{'☆'.repeat(5 - lesson.rating)}
-            </Text>
-          )}
+          <Text style={styles.lessonType}>
+            {aula.tipo === 'pratica' ? '🚗 Aula Prática' : 
+             aula.tipo === 'simulador' ? '🎮 Simulador' : '📚 Aula Teórica'}
+          </Text>
+          <Text style={styles.lessonDuration}>{aula.duracao} minutos</Text>
         </View>
 
-        {lesson.status === 'upcoming' && (
+        {isUpcoming && (
           <View style={styles.lessonActions}>
-            <TouchableOpacity style={styles.actionButton}>
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => navigation.navigate('schedule')}
+            >
               <Text style={styles.actionButtonText}>Reagendar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionButton, styles.cancelButton]}>
+            <TouchableOpacity 
+              style={[styles.actionButton, styles.cancelButton]}
+              onPress={() => handleCancelar(aula._id)}
+            >
               <Text style={styles.cancelButtonText}>Cancelar</Text>
             </TouchableOpacity>
           </View>
@@ -87,6 +147,17 @@ export default function MyLessonsScreen({ navigation }: Props) {
       </View>
     );
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>Carregando aulas...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -98,6 +169,7 @@ export default function MyLessonsScreen({ navigation }: Props) {
         <Text style={styles.headerTitle}>Minhas Aulas</Text>
         <View style={styles.headerSpacer} />
       </View>
+      
       {/* Tabs */}
       <View style={styles.tabsContainer}>
         <TouchableOpacity
@@ -125,7 +197,12 @@ export default function MyLessonsScreen({ navigation }: Props) {
       </View>
 
       {/* Lista de Aulas */}
-      <ScrollView style={styles.lessonsContainer}>
+      <ScrollView 
+        style={styles.lessonsContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {activeTab === 'upcoming' ? (
           upcomingLessons.length > 0 ? (
             upcomingLessons.map(renderLesson)
@@ -142,7 +219,14 @@ export default function MyLessonsScreen({ navigation }: Props) {
             </View>
           )
         ) : (
-          historyLessons.map(renderLesson)
+          historyLessons.length > 0 ? (
+            historyLessons.map(renderLesson)
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyIcon}>📋</Text>
+              <Text style={styles.emptyText}>Nenhuma aula no histórico</Text>
+            </View>
+          )
         )}
         <View style={styles.bottomPadding} />
       </ScrollView>
@@ -179,6 +263,16 @@ const styles = StyleSheet.create({
   headerSpacer: {
     width: 60,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  loadingText: {
+    marginTop: 12,
+    color: '#666',
+  },
   tabsContainer: {
     flexDirection: 'row',
     backgroundColor: '#fff',
@@ -207,6 +301,7 @@ const styles = StyleSheet.create({
   lessonsContainer: {
     flex: 1,
     padding: 16,
+    backgroundColor: '#f5f5f5',
   },
   lessonCard: {
     backgroundColor: '#fff',
@@ -250,14 +345,14 @@ const styles = StyleSheet.create({
   lessonBody: {
     marginBottom: 12,
   },
-  instructorName: {
+  lessonType: {
     fontSize: 16,
     color: '#1a1a1a',
     marginBottom: 4,
   },
-  rating: {
+  lessonDuration: {
     fontSize: 14,
-    letterSpacing: 2,
+    color: '#666',
   },
   lessonActions: {
     flexDirection: 'row',

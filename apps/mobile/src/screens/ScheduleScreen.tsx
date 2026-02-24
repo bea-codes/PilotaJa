@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,8 +6,11 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { instrutoresService, aulasService, Instrutor } from '../services/api';
+import { MOCK_USER } from '../config/user';
 
 type Props = {
   navigation: any;
@@ -17,35 +20,101 @@ export default function ScheduleScreen({ navigation }: Props) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedInstructor, setSelectedInstructor] = useState<string | null>(null);
+  const [instrutores, setInstrutores] = useState<Instrutor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-  // Mock data
-  const dates = [
-    { day: 'Seg', date: '24', full: '2026-02-24' },
-    { day: 'Ter', date: '25', full: '2026-02-25' },
-    { day: 'Qua', date: '26', full: '2026-02-26' },
-    { day: 'Qui', date: '27', full: '2026-02-27' },
-    { day: 'Sex', date: '28', full: '2026-02-28' },
-  ];
+  // Gera próximos 5 dias úteis
+  const getDates = () => {
+    const dates = [];
+    const hoje = new Date();
+    let count = 0;
+    
+    while (dates.length < 5) {
+      const data = new Date(hoje);
+      data.setDate(hoje.getDate() + count);
+      const dayOfWeek = data.getDay();
+      
+      // Pula domingo (0) e sábado (6)
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        const dias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+        dates.push({
+          day: dias[dayOfWeek],
+          date: data.getDate().toString().padStart(2, '0'),
+          full: data.toISOString().split('T')[0],
+        });
+      }
+      count++;
+    }
+    return dates;
+  };
 
+  const dates = getDates();
   const times = ['08:00', '09:00', '10:00', '14:00', '15:00', '16:00'];
 
-  const instructors = [
-    { id: '1', name: 'Carlos Silva', rating: 4.9, lessons: 234 },
-    { id: '2', name: 'Maria Santos', rating: 4.8, lessons: 189 },
-    { id: '3', name: 'João Oliveira', rating: 4.7, lessons: 156 },
-  ];
+  useEffect(() => {
+    loadInstrutores();
+  }, []);
 
-  const handleSchedule = () => {
+  const loadInstrutores = async () => {
+    try {
+      const data = await instrutoresService.listar(MOCK_USER.autoescolaId);
+      setInstrutores(data);
+    } catch (error) {
+      console.error('Erro ao carregar instrutores:', error);
+      // Se não houver instrutores, usa mock
+      setInstrutores([
+        { _id: '1', nome: 'Carlos Silva', email: '', telefone: '', autoescolaId: '' },
+        { _id: '2', nome: 'Maria Santos', email: '', telefone: '', autoescolaId: '' },
+        { _id: '3', nome: 'João Oliveira', email: '', telefone: '', autoescolaId: '' },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSchedule = async () => {
     if (!selectedDate || !selectedTime || !selectedInstructor) {
       Alert.alert('Atenção', 'Selecione data, horário e instrutor');
       return;
     }
-    Alert.alert(
-      'Aula Agendada! ✅',
-      `Sua aula foi agendada para ${selectedDate} às ${selectedTime}`,
-      [{ text: 'OK', onPress: () => navigation.goBack() }]
-    );
+
+    setSubmitting(true);
+    
+    try {
+      const dataHora = `${selectedDate}T${selectedTime}:00.000Z`;
+      
+      await aulasService.criar({
+        autoescolaId: MOCK_USER.autoescolaId,
+        alunoId: MOCK_USER.alunoId,
+        instrutorId: selectedInstructor,
+        dataHora,
+        duracao: 50,
+        tipo: 'pratica',
+      });
+
+      Alert.alert(
+        'Aula Agendada! ✅',
+        `Sua aula foi agendada para ${selectedDate} às ${selectedTime}`,
+        [{ text: 'OK', onPress: () => navigation.goBack() }]
+      );
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Não foi possível agendar a aula');
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>Carregando...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -111,27 +180,24 @@ export default function ScheduleScreen({ navigation }: Props) {
       {/* Seleção de Instrutor */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>👨‍🏫 Escolha o instrutor</Text>
-        {instructors.map((instructor) => (
+        {instrutores.map((instrutor) => (
           <TouchableOpacity
-            key={instructor.id}
+            key={instrutor._id}
             style={[
               styles.instructorCard,
-              selectedInstructor === instructor.id && styles.instructorCardSelected,
+              selectedInstructor === instrutor._id && styles.instructorCardSelected,
             ]}
-            onPress={() => setSelectedInstructor(instructor.id)}
+            onPress={() => setSelectedInstructor(instrutor._id)}
           >
             <View style={styles.instructorAvatar}>
               <Text style={styles.instructorAvatarText}>
-                {instructor.name.charAt(0)}
+                {instrutor.nome.charAt(0)}
               </Text>
             </View>
             <View style={styles.instructorInfo}>
-              <Text style={styles.instructorName}>{instructor.name}</Text>
-              <Text style={styles.instructorStats}>
-                ⭐ {instructor.rating} • {instructor.lessons} aulas
-              </Text>
+              <Text style={styles.instructorName}>{instrutor.nome}</Text>
             </View>
-            {selectedInstructor === instructor.id && (
+            {selectedInstructor === instrutor._id && (
               <Text style={styles.checkmark}>✓</Text>
             )}
           </TouchableOpacity>
@@ -139,8 +205,16 @@ export default function ScheduleScreen({ navigation }: Props) {
       </View>
 
       {/* Botão Agendar */}
-      <TouchableOpacity style={styles.scheduleButton} onPress={handleSchedule}>
-        <Text style={styles.scheduleButtonText}>Confirmar Agendamento</Text>
+      <TouchableOpacity 
+        style={[styles.scheduleButton, submitting && styles.scheduleButtonDisabled]} 
+        onPress={handleSchedule}
+        disabled={submitting}
+      >
+        {submitting ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.scheduleButtonText}>Confirmar Agendamento</Text>
+        )}
       </TouchableOpacity>
 
       <View style={styles.bottomPadding} />
@@ -177,6 +251,16 @@ const styles = StyleSheet.create({
   },
   headerSpacer: {
     width: 60,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  loadingText: {
+    marginTop: 12,
+    color: '#666',
   },
   container: {
     flex: 1,
@@ -233,6 +317,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
     marginBottom: 12,
+    marginRight: '3%',
     borderWidth: 2,
     borderColor: 'transparent',
   },
@@ -283,11 +368,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#1a1a1a',
   },
-  instructorStats: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 4,
-  },
   checkmark: {
     fontSize: 24,
     color: '#007AFF',
@@ -299,6 +379,9 @@ const styles = StyleSheet.create({
     padding: 18,
     margin: 16,
     alignItems: 'center',
+  },
+  scheduleButtonDisabled: {
+    backgroundColor: '#99c9ff',
   },
   scheduleButtonText: {
     color: '#fff',

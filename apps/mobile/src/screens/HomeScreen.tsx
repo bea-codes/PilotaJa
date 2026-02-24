@@ -1,123 +1,210 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { aulasService, Aula } from '../services/api';
+import { MOCK_USER } from '../config/user';
 
 type Props = {
   navigation: any;
 };
 
 export default function HomeScreen({ navigation }: Props) {
-  // Mock data
-  const nextLesson = {
-    date: 'Hoje, 15:00',
-    instructor: 'Carlos Silva',
-    vehicle: 'Fiat Mobi - ABC-1234',
+  const [aulas, setAulas] = useState<Aula[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    loadAulas();
+  }, []);
+
+  const loadAulas = async () => {
+    try {
+      const data = await aulasService.listar({ alunoId: MOCK_USER.alunoId });
+      setAulas(data);
+    } catch (error) {
+      console.error('Erro ao carregar aulas:', error);
+      setAulas([]);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadAulas();
+  };
+
+  // Calcula estatísticas
+  const upcomingAulas = aulas.filter(a => 
+    ['agendada', 'confirmada'].includes(a.status) && new Date(a.dataHora) >= new Date()
+  );
+  const completedAulas = aulas.filter(a => a.status === 'realizada');
+  const nextAula = upcomingAulas.length > 0 ? upcomingAulas[0] : null;
+
   const stats = {
-    completed: 12,
-    remaining: 8,
+    completed: completedAulas.length,
+    remaining: Math.max(0, 20 - completedAulas.length), // Assumindo 20 aulas necessárias
     total: 20,
+    upcoming: upcomingAulas.length,
+  };
+
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const hoje = new Date();
+    const amanha = new Date(hoje);
+    amanha.setDate(hoje.getDate() + 1);
+
+    let dayStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    if (date.toDateString() === hoje.toDateString()) {
+      dayStr = 'Hoje';
+    } else if (date.toDateString() === amanha.toDateString()) {
+      dayStr = 'Amanhã';
+    }
+
+    const timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return `${dayStr}, ${timeStr}`;
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>Olá, Cassio! 👋</Text>
-          <Text style={styles.subGreeting}>Pronto para mais uma aula?</Text>
-        </View>
-      </View>
-
-      {/* Próxima Aula */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>📅 Próxima Aula</Text>
-        <View style={styles.lessonInfo}>
-          <Text style={styles.lessonDate}>{nextLesson.date}</Text>
-          <Text style={styles.lessonDetail}>👨‍🏫 {nextLesson.instructor}</Text>
-          <Text style={styles.lessonDetail}>🚗 {nextLesson.vehicle}</Text>
-        </View>
-        <TouchableOpacity style={styles.cardButton}>
-          <Text style={styles.cardButtonText}>Ver detalhes</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Progresso */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>📊 Seu Progresso</Text>
-        <View style={styles.progressContainer}>
-          <View style={styles.progressBar}>
-            <View 
-              style={[
-                styles.progressFill, 
-                { width: `${(stats.completed / stats.total) * 100}%` }
-              ]} 
-            />
-          </View>
-          <Text style={styles.progressText}>
-            {stats.completed} de {stats.total} aulas concluídas
-          </Text>
-        </View>
-        <View style={styles.statsRow}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.completed}</Text>
-            <Text style={styles.statLabel}>Concluídas</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.remaining}</Text>
-            <Text style={styles.statLabel}>Restantes</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>85%</Text>
-            <Text style={styles.statLabel}>Aproveitamento</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView 
+        style={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>Olá, {MOCK_USER.nome}! 👋</Text>
+            <Text style={styles.subGreeting}>
+              {stats.upcoming > 0 
+                ? `Você tem ${stats.upcoming} aula${stats.upcoming > 1 ? 's' : ''} agendada${stats.upcoming > 1 ? 's' : ''}`
+                : 'Pronto para agendar uma aula?'
+              }
+            </Text>
           </View>
         </View>
-      </View>
 
-      {/* Ações Rápidas */}
-      <View style={styles.actionsContainer}>
-        {/* Primeira linha - ações principais */}
-        <View style={styles.actionsRow}>
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => navigation.navigate('schedule')}
-          >
-            <Text style={styles.actionIcon}>📆</Text>
-            <Text style={styles.actionText}>Agendar Aula</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => navigation.navigate('lessons')}
-          >
-            <Text style={styles.actionIcon}>📋</Text>
-            <Text style={styles.actionText}>Minhas Aulas</Text>
-          </TouchableOpacity>
+        {/* Próxima Aula */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>📅 Próxima Aula</Text>
+          {loading ? (
+            <ActivityIndicator color="#007AFF" style={{ marginVertical: 20 }} />
+          ) : nextAula ? (
+            <>
+              <View style={styles.lessonInfo}>
+                <Text style={styles.lessonDate}>{formatDateTime(nextAula.dataHora)}</Text>
+                <Text style={styles.lessonDetail}>
+                  {nextAula.tipo === 'pratica' ? '🚗 Aula Prática' : 
+                   nextAula.tipo === 'simulador' ? '🎮 Simulador' : '📚 Aula Teórica'}
+                </Text>
+                <Text style={styles.lessonDetail}>⏱️ {nextAula.duracao} minutos</Text>
+              </View>
+              <TouchableOpacity 
+                style={styles.cardButton}
+                onPress={() => navigation.navigate('lessons')}
+              >
+                <Text style={styles.cardButtonText}>Ver detalhes</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <Text style={styles.noLessonText}>Nenhuma aula agendada</Text>
+              <TouchableOpacity 
+                style={styles.cardButton}
+                onPress={() => navigation.navigate('schedule')}
+              >
+                <Text style={styles.cardButtonText}>Agendar agora</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
 
-        {/* Segunda linha - ações secundárias */}
-        <View style={styles.actionsRow}>
-          <TouchableOpacity style={styles.actionButton}>
-            <Text style={styles.actionIcon}>💬</Text>
-            <Text style={styles.actionText}>Suporte</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionButton}>
-            <Text style={styles.actionIcon}>⚙️</Text>
-            <Text style={styles.actionText}>Perfil</Text>
-          </TouchableOpacity>
+        {/* Progresso */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>📊 Seu Progresso</Text>
+          <View style={styles.progressContainer}>
+            <View style={styles.progressBar}>
+              <View 
+                style={[
+                  styles.progressFill, 
+                  { width: `${Math.min(100, (stats.completed / stats.total) * 100)}%` }
+                ]} 
+              />
+            </View>
+            <Text style={styles.progressText}>
+              {stats.completed} de {stats.total} aulas concluídas
+            </Text>
+          </View>
+          <View style={styles.statsRow}>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{stats.completed}</Text>
+              <Text style={styles.statLabel}>Concluídas</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{stats.remaining}</Text>
+              <Text style={styles.statLabel}>Restantes</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{stats.upcoming}</Text>
+              <Text style={styles.statLabel}>Agendadas</Text>
+            </View>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+
+        {/* Ações Rápidas */}
+        <View style={styles.actionsContainer}>
+          {/* Primeira linha - ações principais */}
+          <View style={styles.actionsRow}>
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => navigation.navigate('schedule')}
+            >
+              <Text style={styles.actionIcon}>📆</Text>
+              <Text style={styles.actionText}>Agendar Aula</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => navigation.navigate('lessons')}
+            >
+              <Text style={styles.actionIcon}>📋</Text>
+              <Text style={styles.actionText}>Minhas Aulas</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Segunda linha - ações secundárias */}
+          <View style={styles.actionsRow}>
+            <TouchableOpacity style={styles.actionButton}>
+              <Text style={styles.actionIcon}>💬</Text>
+              <Text style={styles.actionText}>Suporte</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.actionButton}>
+              <Text style={styles.actionIcon}>⚙️</Text>
+              <Text style={styles.actionText}>Perfil</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#007AFF',
+  },
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
@@ -125,7 +212,6 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#007AFF',
     padding: 24,
-    paddingTop: 60,
     paddingBottom: 32,
   },
   greeting: {
@@ -169,6 +255,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginBottom: 4,
+  },
+  noLessonText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginVertical: 16,
   },
   cardButton: {
     backgroundColor: '#f0f7ff',
@@ -229,7 +321,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 16,
     padding: 20,
-    margin: '2%',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
