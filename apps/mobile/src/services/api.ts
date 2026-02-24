@@ -101,7 +101,9 @@ export type Aluno = {
   nome: string;
   email: string;
   telefone: string;
-  autoescolaId: string;
+  autoescolaId?: string;
+  categoriaDesejada?: string;
+  status?: string;
 };
 
 export const alunosService = {
@@ -112,13 +114,4 @@ export const alunosService = {
   
   buscarPorId: (id: string) => 
     request<Aluno>(API_ENDPOINTS.alunoById(id)),
-};
-
-export type Aluno = {
-  _id: string;
-  nome: string;
-  email: string;
-  telefone: string;
-  categoriaDesejada?: string;
-  status?: string;
 };
