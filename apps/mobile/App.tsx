@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import LoginScreen from './src/screens/LoginScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import ScheduleScreen from './src/screens/ScheduleScreen';
@@ -14,7 +15,7 @@ export default function App() {
   const goBack = () => setCurrentScreen('home');
 
   return (
-    <>
+    <SafeAreaProvider>
       <StatusBar style="auto" />
       {currentScreen === 'login' && (
         <LoginScreen navigation={{ replace: () => navigate('home') }} />
@@ -28,6 +29,6 @@ export default function App() {
       {currentScreen === 'lessons' && (
         <MyLessonsScreen navigation={{ navigate, goBack }} />
       )}
-    </>
+    </SafeAreaProvider>
   );
 }

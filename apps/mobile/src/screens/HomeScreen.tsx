@@ -81,31 +81,37 @@ export default function HomeScreen({ navigation }: Props) {
 
       {/* Ações Rápidas */}
       <View style={styles.actionsContainer}>
-        <TouchableOpacity 
-          style={styles.actionButton}
-          onPress={() => navigation.navigate('schedule')}
-        >
-          <Text style={styles.actionIcon}>📆</Text>
-          <Text style={styles.actionText}>Agendar Aula</Text>
-        </TouchableOpacity>
+        {/* Primeira linha - ações principais */}
+        <View style={styles.actionsRow}>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => navigation.navigate('schedule')}
+          >
+            <Text style={styles.actionIcon}>📆</Text>
+            <Text style={styles.actionText}>Agendar Aula</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.actionButton}
-          onPress={() => navigation.navigate('lessons')}
-        >
-          <Text style={styles.actionIcon}>📋</Text>
-          <Text style={styles.actionText}>Minhas Aulas</Text>
-        </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => navigation.navigate('lessons')}
+          >
+            <Text style={styles.actionIcon}>📋</Text>
+            <Text style={styles.actionText}>Minhas Aulas</Text>
+          </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.actionIcon}>💬</Text>
-          <Text style={styles.actionText}>Suporte</Text>
-        </TouchableOpacity>
+        {/* Segunda linha - ações secundárias */}
+        <View style={styles.actionsRow}>
+          <TouchableOpacity style={styles.actionButton}>
+            <Text style={styles.actionIcon}>💬</Text>
+            <Text style={styles.actionText}>Suporte</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.actionIcon}>⚙️</Text>
-          <Text style={styles.actionText}>Perfil</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton}>
+            <Text style={styles.actionIcon}>⚙️</Text>
+            <Text style={styles.actionText}>Perfil</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
@@ -210,13 +216,16 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   actionsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     padding: 8,
     marginBottom: 24,
   },
+  actionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
   actionButton: {
-    width: '46%',
+    width: '48%',
     backgroundColor: '#fff',
     borderRadius: 16,
     padding: 20,
