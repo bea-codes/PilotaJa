@@ -197,7 +197,10 @@ export default function HomeScreen({ navigation }: Props) {
               <Text style={styles.actionText}>Suporte</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionButton}>
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => navigation.navigate('profile')}
+            >
               <Text style={styles.actionIcon}>⚙️</Text>
               <Text style={styles.actionText}>Perfil</Text>
             </TouchableOpacity>
