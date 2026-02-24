@@ -20,19 +20,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function AppNavigator() {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: '#007AFF',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: '600',
-          },
-          headerBackTitleVisible: false,
-        }}
-      >
+      <Stack.Navigator initialRouteName="Login">
         <Stack.Screen
           name="Login"
           component={LoginScreen}
@@ -46,12 +34,20 @@ export default function AppNavigator() {
         <Stack.Screen
           name="Schedule"
           component={ScheduleScreen}
-          options={{ title: 'Agendar Aula' }}
+          options={{ 
+            title: 'Agendar Aula',
+            headerStyle: { backgroundColor: '#007AFF' },
+            headerTintColor: '#fff',
+          }}
         />
         <Stack.Screen
           name="MyLessons"
           component={MyLessonsScreen}
-          options={{ title: 'Minhas Aulas' }}
+          options={{ 
+            title: 'Minhas Aulas',
+            headerStyle: { backgroundColor: '#007AFF' },
+            headerTintColor: '#fff',
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
