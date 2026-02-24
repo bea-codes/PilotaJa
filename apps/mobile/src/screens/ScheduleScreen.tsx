@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { instructorsService, lessonsService, Instructor } from '../services/api';
-import { MOCK_USER } from '../config/user';
+import { UserSession } from '../services/auth';
 
-type Props = { navigation: any };
+type Props = { 
+  navigation: any;
+  session: UserSession;
+};
 
-export default function ScheduleScreen({ navigation }: Props) {
+export default function ScheduleScreen({ navigation, session }: Props) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedInstructor, setSelectedInstructor] = useState<string | null>(null);
@@ -38,14 +41,10 @@ export default function ScheduleScreen({ navigation }: Props) {
 
   const loadInstructors = async () => {
     try {
-      const data = await instructorsService.list(MOCK_USER.drivingSchoolId);
+      const data = await instructorsService.list(session.drivingSchoolId);
       setInstructors(data);
     } catch (error) {
-      setInstructors([
-        { _id: '1', name: 'Carlos Silva', email: '', phone: '', drivingSchoolId: '' },
-        { _id: '2', name: 'Maria Santos', email: '', phone: '', drivingSchoolId: '' },
-        { _id: '3', name: 'João Oliveira', email: '', phone: '', drivingSchoolId: '' },
-      ]);
+      setInstructors([]);
     } finally { setLoading(false); }
   };
 
@@ -54,6 +53,12 @@ export default function ScheduleScreen({ navigation }: Props) {
       Alert.alert('Atenção', 'Selecione data, horário e instrutor');
       return;
     }
+    
+    if (!session.studentId) {
+      Alert.alert('Erro', 'Sessão inválida');
+      return;
+    }
+
     setSubmitting(true);
     try {
       const [year, month, day] = selectedDate.split('-').map(Number);
@@ -61,8 +66,8 @@ export default function ScheduleScreen({ navigation }: Props) {
       const dateTimeLocal = new Date(year, month - 1, day, hour, minute, 0);
       
       await lessonsService.create({
-        drivingSchoolId: MOCK_USER.drivingSchoolId,
-        studentId: MOCK_USER.studentId,
+        drivingSchoolId: session.drivingSchoolId,
+        studentId: session.studentId,
         instructorId: selectedInstructor,
         dateTime: dateTimeLocal.toISOString(),
         duration: 50,
@@ -115,13 +120,15 @@ export default function ScheduleScreen({ navigation }: Props) {
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>👨‍🏫 Escolha o instrutor</Text>
-          {instructors.map((instructor) => (
+          {instructors.length > 0 ? instructors.map((instructor) => (
             <TouchableOpacity key={instructor._id} style={[styles.instructorCard, selectedInstructor === instructor._id && styles.instructorCardSelected]} onPress={() => setSelectedInstructor(instructor._id)}>
               <View style={styles.instructorAvatar}><Text style={styles.instructorAvatarText}>{instructor.name.charAt(0)}</Text></View>
               <View style={styles.instructorInfo}><Text style={styles.instructorName}>{instructor.name}</Text></View>
               {selectedInstructor === instructor._id && <Text style={styles.checkmark}>✓</Text>}
             </TouchableOpacity>
-          ))}
+          )) : (
+            <Text style={styles.noInstructors}>Nenhum instrutor disponível</Text>
+          )}
         </View>
         <TouchableOpacity style={[styles.scheduleButton, submitting && styles.scheduleButtonDisabled]} onPress={handleSchedule} disabled={submitting}>
           {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.scheduleButtonText}>Confirmar Agendamento</Text>}
@@ -162,6 +169,7 @@ const styles = StyleSheet.create({
   instructorInfo: { flex: 1 },
   instructorName: { fontSize: 16, fontWeight: '600', color: '#1a1a1a' },
   checkmark: { fontSize: 24, color: '#007AFF', fontWeight: 'bold' },
+  noInstructors: { fontSize: 16, color: '#666', textAlign: 'center', padding: 20 },
   scheduleButton: { backgroundColor: '#007AFF', borderRadius: 12, padding: 18, margin: 16, alignItems: 'center' },
   scheduleButtonDisabled: { backgroundColor: '#99c9ff' },
   scheduleButtonText: { color: '#fff', fontSize: 18, fontWeight: '600' },

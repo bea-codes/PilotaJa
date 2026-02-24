@@ -2,11 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { lessonsService, Lesson } from '../services/api';
-import { MOCK_USER } from '../config/user';
+import { UserSession } from '../services/auth';
 
-type Props = { navigation: any };
+type Props = { 
+  navigation: any;
+  session: UserSession;
+};
 
-export default function MyLessonsScreen({ navigation }: Props) {
+export default function MyLessonsScreen({ navigation, session }: Props) {
   const [activeTab, setActiveTab] = useState<'upcoming' | 'history'>('upcoming');
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,8 +19,8 @@ export default function MyLessonsScreen({ navigation }: Props) {
 
   const loadLessons = async () => {
     try {
-      if (!MOCK_USER.studentId) { setLessons([]); return; }
-      const data = await lessonsService.list({ studentId: MOCK_USER.studentId });
+      if (!session.studentId) { setLessons([]); return; }
+      const data = await lessonsService.list({ studentId: session.studentId });
       setLessons(data);
     } catch (error) { setLessons([]); }
     finally { setLoading(false); setRefreshing(false); }

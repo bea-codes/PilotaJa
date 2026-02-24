@@ -10,16 +10,19 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { lessonsService, Lesson } from '../services/api';
-import { MOCK_USER } from '../config/user';
+import { UserSession } from '../services/auth';
 
 type Props = {
   navigation: any;
+  session: UserSession;
 };
 
-export default function HomeScreen({ navigation }: Props) {
+export default function HomeScreen({ navigation, session }: Props) {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  const userName = session.profile?.name?.split(' ')[0] || 'Aluno';
 
   useEffect(() => {
     loadLessons();
@@ -27,11 +30,11 @@ export default function HomeScreen({ navigation }: Props) {
 
   const loadLessons = async () => {
     try {
-      if (!MOCK_USER.studentId) {
+      if (!session.studentId) {
         setLessons([]);
         return;
       }
-      const data = await lessonsService.list({ studentId: MOCK_USER.studentId });
+      const data = await lessonsService.list({ studentId: session.studentId });
       setLessons(data);
     } catch (error) {
       console.error('Error loading lessons:', error);
@@ -95,7 +98,7 @@ export default function HomeScreen({ navigation }: Props) {
       >
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Olá, {MOCK_USER.name}! 👋</Text>
+            <Text style={styles.greeting}>Olá, {userName}! 👋</Text>
             <Text style={styles.subGreeting}>
               {stats.upcoming > 0 
                 ? `Você tem ${stats.upcoming} aula${stats.upcoming > 1 ? 's' : ''} agendada${stats.upcoming > 1 ? 's' : ''}`
